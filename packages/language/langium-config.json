@@ -1,0 +1,13 @@
+{
+    "projectName": "BookshelfDoc",
+    "languages": [
+        {
+            "id": "bookshelf-doc",
+            "grammar": "src/bookshelf-doc.langium",
+            "fileExtensions": [
+                ".bs"
+            ]
+        }
+    ],
+    "out": "src/generated"
+}

@@ -1,0 +1,16 @@
+{
+    // The language has no comments: a '>' description is content, not a comment, and there is
+    // no '//' form. Declaring one would make "Toggle Line Comment" corrupt the document.
+    "brackets": [
+        ["{", "}"],
+        ["[", "]"]
+    ],
+    "autoClosingPairs": [
+        ["{", "}"],
+        ["[", "]"]
+    ],
+    "surroundingPairs": [
+        ["{", "}"],
+        ["[", "]"]
+    ]
+}
