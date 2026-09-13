@@ -110,6 +110,5 @@ feature function_tag ^input:
     updated: 2026/09/13 26.3
 
     input storage path/only: { value: number } > a storage with a path only
-    input storage bs.exhaustive: levels : { value: number } > a namespace with an empty path, then a path
     context state > ...
     output state > ...

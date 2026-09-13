@@ -191,9 +191,9 @@ assert.ok(await parses(header + feature(`    input storage bs.xp:add_levels in: 
     } > amount of levels to add
 `)), 'a storage target and a path');
 // the same terminal wins on a colon written without a space, so a struct entry needs one
-// a resource location only lexes after 'storage' or a registry, so the spacing is free elsewhere
-assert.ok(await parses(variable('storage', '{ p:int }')), 'a struct entry without a space after its colon');
-assert.ok(await parses(header.replace('slug: x', 'slug:x') + variable('state', '')), 'a property without a space after its colon');
+// a resource location wins on a colon written without a space, so a struct entry needs one
+assert.ok(!await parses(variable('storage', '{ p:int }')), 'a struct entry needs a space after its colon');
+assert.ok(await parses(variable('storage', '{ p: int }')), 'a struct entry with a space after its colon');
 
 assert.ok(await parses(header + feature(`    input storage: {
         levels: int
@@ -248,14 +248,6 @@ await ok(`var input2 = storage : { p: int } > doc
 // without the escape the keyword wins, which leaves a 'ref' with nothing to point at
 assert.ok(!await parses(`var ^input = storage : { p: int } > doc
 ` + feature('    input ref input\n')), 'an unescaped keyword as a reference');
-
-// after 'storage', 'foo:' is a namespace with an empty path, as in Minecraft: a bare path needs a space
-const storageOf = async (text) => (await valueOf(header + variable(text, ''))).slots.find(s => s.$type === 'Variable').expression.kind;
-assert.equal((await storageOf('storage foo:')).id, 'foo:');
-assert.equal((await storageOf('storage foo: bar/baz')).path, 'bar/baz');
-assert.equal((await storageOf('storage bs.xp:add_levels in')).path, 'in');
-assert.equal((await storageOf('storage in : { p: int }')).id, undefined);
-assert.ok(!await parses(variable('storage in: { p: int }', '')), "'in:' after 'storage' is a namespace, not a path");
 
 // a '#' inside free text is text: prose may cite '#bs.xp:foo' without opening a comment
 const cited = await valueOf(header.replace(/description: .*/, 'description: see #bs.xp:foo') + variable('state', '')

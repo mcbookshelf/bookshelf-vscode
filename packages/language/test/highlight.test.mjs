@@ -130,7 +130,6 @@ assert.match(scopeOf('    input storage bs.exhaustive:shared payload/levels : {'
 assert.match(scopeOf('    input storage bs.exhaustive:shared payload/levels : {', 'shared'), /^entity\.name\.label/);
 assert.match(scopeOf('    input storage bs.exhaustive:shared payload/levels : {', 'payload/levels'), /^entity\.name\.label/);
 assert.match(scopeOf('    input storage in : {', 'in :'), /^entity\.name\.label/);
-assert.match(scopeOf('    input storage foo: : int', 'foo'), /^entity\.name\.namespace/);
 assert.match(scopeOf('var v = storage : int | string > doc', '|'), /^keyword\.operator\.range/);
 
 // a description is free text, so the words inside it stay a comment

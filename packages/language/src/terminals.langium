@@ -2,12 +2,12 @@ terminal INDENT: 'synthetic:indent';
 terminal DEDENT: 'synthetic:dedent';
 terminal TEXT: 'synthetic:text';
 
-// a resource location. The pattern is a placeholder: BookshelfDocTokenBuilder only matches it
-// after 'storage' or a registry, so that 'foo:' stays an ID and a ':' everywhere else.
-terminal MC_ID: 'synthetic:mc_id';
+// a resource location, declared before ID since it starts like one. It also wins on a colon
+// written without a space, so 'levels:int' is a resource location: write 'levels: int'.
+terminal MC_ID: /[a-z_.-]+:[a-z_.-]+/;
 terminal ID: '^'? ('_' | LOWER | UPPER) ('_' | LOWER | UPPER | DIGIT | '-')*;
 terminal fragment NAMESPACE: ('_' | LOWER | UPPER | DIGIT | '.')+;
-terminal NUMBER: '0' | '-' NON_ZERO DIGIT*;
+terminal NUMBER: '-'? ('0' | NON_ZERO DIGIT*);
 
 terminal DOC: '>' !('\n' | '\r')*;
 
