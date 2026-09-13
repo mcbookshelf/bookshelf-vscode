@@ -6,6 +6,7 @@ import './mcdoc'
 
 entry Module returns Module:
     NL?
+    description+=DOC?
     slots+=ModuleSlot*;
 
 ModuleSlot returns ModuleSlot:
@@ -13,6 +14,7 @@ ModuleSlot returns ModuleSlot:
 
 Feature returns Feature:
     'feature' registry=Registry id=McId ':' NL
+        description+=DOC?
         INDENT
         slots+=FeatureSlot*
         DEDENT;

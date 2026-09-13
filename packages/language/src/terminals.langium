@@ -7,7 +7,7 @@ terminal TEXT: 'synthetic:text';
 terminal MC_ID: 'synthetic:mc_id';
 terminal ID: '^'? ('_' | LOWER | UPPER) ('_' | LOWER | UPPER | DIGIT | '-')*;
 terminal fragment NAMESPACE: ('_' | LOWER | UPPER | DIGIT | '.')+;
-terminal NUMBER: '0' | NON_ZERO DIGIT*;
+terminal NUMBER: '0' | '-' NON_ZERO DIGIT*;
 
 terminal DOC: '>' !('\n' | '\r')*;
 

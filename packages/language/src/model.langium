@@ -1,12 +1,14 @@
 import './type.model';
 
 interface Module {
+    description: string[];
     slots: ModuleSlot[];
 }
 
 type ModuleSlot = Feature | Variable | Property;
 
 interface Feature {
+    description: string[];
     registry: string;
     id: string;
     slots: FeatureSlot[];
