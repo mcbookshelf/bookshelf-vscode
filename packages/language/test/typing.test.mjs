@@ -257,6 +257,11 @@ assert.equal((await storageOf('storage bs.xp:add_levels in')).path, 'in');
 assert.equal((await storageOf('storage in : { p: int }')).id, undefined);
 assert.ok(!await parses(variable('storage in: { p: int }', '')), "'in:' after 'storage' is a namespace, not a path");
 
+// a '#' inside free text is text: prose may cite '#bs.xp:foo' without opening a comment
+const cited = await valueOf(header.replace(/description: .*/, 'description: see #bs.xp:foo') + variable('state', '')
+    + feature('    context state > refer to #bs.xp:foo\n'));
+assert.equal(propertyOf(cited, 'description'), 'see #bs.xp:foo');
+assert.deepEqual(firstFeature(cited).slots.find(slot => slot.$type === 'Context').expression.description, ['> refer to #bs.xp:foo']);
 // --- documentation follows the element it documents, on the same line
 const refSlot = (documentation) => variable('storage', '{ p: int }') + feature(`    input ref v${documentation}\n`);
 const refDescription = async (documentation) =>
