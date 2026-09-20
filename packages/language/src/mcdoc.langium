@@ -1,74 +1,60 @@
 import './model'
 import './terminals'
 
-// a union is a binary tree, so 'int | string | bool' nests; a single type stays what it is
-infix Type on SingleType returns UnionType: '|';
+// a union is flat: 'a | b | c' is one node with three members; a single member stays what it is
+Type returns Type:
+    Base ({UnionType.members+=current} ('|' members+=Base)+)?;
 
-// '[]' is a postfix, so 'player[]' and 'int @ 0..9 []' nest without left recursion
-SingleType returns Type:
-    ElementType ({ArrayType.elements+=current} '[' ']' sizeRange=RangeType?)*;
+// every base takes attributes first
+Base returns Type:
+    ArrayType | PrimitiveType | ListType | StructType | ReferenceType;
 
-ElementType returns Type: PrimitiveType | CompositeType;
+// an array: a Minecraft array of numbers, 'int[]' or 'byte @ 0..1 [] @ 3', or an executor array,
+// 'entity[]' or 'player[]', which takes no element range.
+ArrayType returns ArrayType:
+    attributes+=ATTRIBUTE* element=ArrayElement '[' ']' ('@' range=Range)?;
+
+ArrayElement returns PrimitiveType:
+      name=('int' | 'byte' | 'long') ('@' range=Range)?
+    | name=('entity' | 'player');
 
 PrimitiveType returns PrimitiveType:
-      RangeablePrimitiveType
-    | {BoolType} 'boolean'
-    | {AnyType} 'any'
-    | {PlayerType} 'player'
-    | {EntityType} 'entity'
-    | {XyType} 'xy'
-    | {XyzType} 'xyz'
-    | {OverworldType} 'overworld'
-    | {NetherType} 'nether'
-    | {EndType} 'end';
+    attributes+=ATTRIBUTE* name=PrimitiveName ('@' range=Range)?;
 
-RangeablePrimitiveType returns RangeablePrimitiveType:
-    (
-          {ShortType} 'short'
-        | {FloatType} 'float'
-        | {DoubleType} 'double'
-        | {StringType} 'string'
-        | {NumberType} 'number'
-    ) valueRange=RangeType?
-    | MinecraftArrayType;
-
-MinecraftArrayType returns MinecraftArrayType:
-    ( {IntType} 'int'
-    | {ByteType} 'byte'
-    | {LongType} 'long'
-    ) valueRange=RangeType?;
-
-CompositeType returns CompositeType:
-    ListType | TupleType | StructType;
-
+// '[a]' is a list, bounded in size; '[a, b]' and '[a,]' are tuples
 ListType returns ListType:
-    '[' element=Type ']' sizeRange=RangeType?;
+    attributes+=ATTRIBUTE* '[' elements+=Type
+    ( ']' ('@' range=Range)?
+    | tuple?=',' (elements+=Type (',' elements+=Type)*)? ']' );
 
-TupleType returns TupleType:
-    '[' elements+=Type ',' (elements+=Type (',' elements+=Type)* )? ']';
+// one entry per line; '{}' is any compound
+StructType returns StructType:
+    attributes+=ATTRIBUTE* '{' (NL entries+=StructEntry*)? '}';
 
-StructType returns StructType: '{'
-    NL? entries+=StructTypeEntry+
-     '}';
+StructEntry returns StructEntry:
+    name=Name (optional?='?')? ':' type=Type ','? End;
 
-RangeType returns NumberRangeType:
-    '@' NumberRange;
+ReferenceType returns ReferenceType:
+    attributes+=ATTRIBUTE* reference=[Variable:VARIABLE];
 
-StructTypeEntry returns StructTypeEntry: property=ID (optional?='?')? ':' type=Type description+=DOC? NL?;
+// 'min..max', 'min..', '..max' or an exact value
+Range returns Range:
+      min=NumberValue '..' max=NumberValue
+    | min=NumberValue '..'
+    | '..' max=NumberValue
+    | value=NumberValue;
 
-NumberRange returns NumberRangeType:
-    ExactNumberRange | MinNumberRange | MaxNumberRange | FullNumberRange;
+NumberValue returns number: INT | FLOAT;
 
-ExactNumberRange returns NumberRangeType:
-    value=NumberValue;
+PrimitiveName returns string:
+    'int' | 'byte' | 'long' | 'short' | 'string' | 'float' | 'double' | 'number'
+    | 'boolean' | 'any' | 'player' | 'entity' | 'xyz' | 'xy' | 'overworld' | 'nether' | 'end';
 
-MinNumberRange returns NumberRangeType:
-    min=NumberValue '..';
+Name returns string:
+    ID | 'feature' | 'storage' | 'arguments' | PrimitiveName
+    | 'executor' | 'rotation' | 'position' | 'dimension' | 'state' | 'result' | 'success' | 'macro'
+    | 'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag';
 
-MaxNumberRange returns NumberRangeType:
-    '..' max=NumberValue;
-
-FullNumberRange returns NumberRangeType:
-    min=NumberValue '..' max=NumberValue;
-
-NumberValue returns number: NUMBER ('.' NUMBER?)? | '.' NUMBER;
+// the tail of a line: its doc, on the same line or on the next one, then the line end
+fragment End:
+    NL description=DOC NL | description=DOC? NL;

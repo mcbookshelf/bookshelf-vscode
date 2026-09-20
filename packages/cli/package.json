@@ -1,5 +1,5 @@
 {
-    "name": "bookshelf-doc-cli",
+    "name": "bsdoc-cli",
     "description": "The cli specific package",
     "version": "0.0.1",
     "license": "MPL-2.0",
@@ -14,7 +14,7 @@
         "src"
     ],
     "bin": {
-        "bookshelf-doc-cli": "./bin/cli.js"
+        "bsdoc-cli": "./bin/cli.js"
     },
     "scripts": {
         "clean": "shx rm -fr *.tsbuildinfo out",
@@ -22,7 +22,7 @@
         "build:clean": "npm run clean && npm run build"
     },
     "dependencies": {
-        "bookshelf-doc-language": "0.0.1",
+        "bsdoc-language": "0.0.1",
         "chalk": "~5.6.2",
         "commander": "~15.0.0"
     }

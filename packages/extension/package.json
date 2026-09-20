@@ -1,10 +1,14 @@
 {
-    "name": "vscode-bookshelf-doc",
+    "name": "vscode-bsdoc",
     "description": "The extension specific package",
     "version": "0.0.1",
     "license": "MPL-2.0",
     "displayName": "Bookshelf",
     "publisher": "mcbookshelf",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mcbookshelf/bookshelf-vscode.git"
+    },
     "icon": "images/icon.png",
     "type": "module",
     "engines": {
@@ -16,10 +20,10 @@
     "contributes": {
         "languages": [
             {
-                "id": "bookshelf-doc",
+                "id": "bsdoc",
                 "aliases": [
                     "Bookshelf",
-                    "bookshelf-doc"
+                    "bsdoc"
                 ],
                 "extensions": [
                     ".bs"
@@ -33,14 +37,14 @@
         ],
         "grammars": [
             {
-                "language": "bookshelf-doc",
-                "scopeName": "source.bookshelf-doc",
-                "path": "syntaxes/bookshelf-doc.tmLanguage.json"
+                "language": "bsdoc",
+                "scopeName": "source.bsdoc",
+                "path": "syntaxes/bsdoc.tmLanguage.json"
             }
         ]
     },
     "activationEvents": [
-        "onLanguage:bookshelf-doc"
+        "onLanguage:bsdoc"
     ],
     "main": "./out/extension/main.cjs",
     "scripts": {
@@ -48,11 +52,11 @@
         "vscode:prepublish": "npm run build",
         "build": "tsc -b tsconfig.json && node esbuild.mjs",
         "build:clean": "npm run clean && npm run build",
-        "package": "npm run build && vsce package --allow-missing-repository",
+        "package": "npm run build && vsce package --no-dependencies",
         "watch": "concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.json --watch\" \"node esbuild.mjs --watch\""
     },
     "dependencies": {
-        "bookshelf-doc-language": "0.0.1",
+        "bsdoc-language": "0.0.1",
         "vscode-languageclient": "~10.1.0",
         "vscode-languageserver": "~10.1.0"
     },

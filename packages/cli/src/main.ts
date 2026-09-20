@@ -1,5 +1,5 @@
-import type { Module } from 'bookshelf-doc-language';
-import { createBookshelfDocServices, BookshelfDocLanguageMetaData } from 'bookshelf-doc-language';
+import type { Module } from 'bsdoc-language';
+import { createBsdocServices, BsdocLanguageMetaData } from 'bsdoc-language';
 import chalk from 'chalk';
 import { Command } from 'commander';
 import { extractAstNode } from './util.js';
@@ -14,7 +14,7 @@ const packagePath = path.resolve(__dirname, '..', 'package.json');
 const packageContent = await fs.readFile(packagePath, 'utf-8');
 
 export const generateAction = async (fileName: string, opts: GenerateOptions): Promise<void> => {
-    const services = createBookshelfDocServices(NodeFileSystem).BookshelfDoc;
+    const services = createBsdocServices(NodeFileSystem).Bsdoc;
     const model = await extractAstNode<Module>(fileName, services);
     const generatedFilePath = generateJson(model, fileName, opts.destination);
     console.log(chalk.green(`JSON generated successfully: ${generatedFilePath}`));
@@ -29,7 +29,7 @@ export default function(): void {
 
     program.version(JSON.parse(packageContent).version);
 
-    const fileExtensions = BookshelfDocLanguageMetaData.fileExtensions.join(', ');
+    const fileExtensions = BsdocLanguageMetaData.fileExtensions.join(', ');
     program
         .command('generate')
         .argument('<file>', `source file (possible file extensions: ${fileExtensions})`)

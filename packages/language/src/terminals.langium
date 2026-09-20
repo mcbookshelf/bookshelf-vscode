@@ -1,25 +1,26 @@
-terminal INDENT: 'synthetic:indent';
-terminal DEDENT: 'synthetic:dedent';
 terminal TEXT: 'synthetic:text';
 
-// a resource location, declared before ID since it starts like one. It also wins on a colon
+// A comment is a whole line whose first non-blank character is '#'.
+hidden terminal SL_COMMENT: 'synthetic:comment';
+
+// A doc: '>' to the end of the line, continued on line whose first non-blank character is '>'.
+terminal DOC: />[^\r\n]*(?:\r?\n[ \t]*>[^\r\n]*)*/;
+
+// An mcdoc attribute, kept verbatim, with brackets nesting up to 3 deep.
+terminal ATTRIBUTE: /#\[(?:[^\[\]]|\[(?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*\])*\]/;
+
+// A resource location, declared before ID since it starts like one. It also wins on a colon
 // written without a space, so 'levels:int' is a resource location: write 'levels: int'.
-terminal MC_ID: /[a-z_.-]+:[a-z_.-]+/;
-terminal ID: '^'? ('_' | LOWER | UPPER) ('_' | LOWER | UPPER | DIGIT | '-')*;
-terminal fragment NAMESPACE: ('_' | LOWER | UPPER | DIGIT | '.')+;
-terminal NUMBER: '-'? ('0' | NON_ZERO DIGIT*);
+terminal RESOURCE_LOCATION: /[a-z0-9_.-]+:[a-z0-9_.\/-]+/;
 
-terminal DOC: '>' !('\n' | '\r')*;
+// A '$' name, the '$' is stripped by the value converter.
+terminal VARIABLE: /\$[_A-Za-z][_A-Za-z0-9-]*/;
 
-terminal fragment LOWER: 'a'..'z';
-terminal fragment UPPER: 'A'..'Z';
-terminal fragment DIGIT: '0'..'9';
-terminal fragment NON_ZERO: '1'..'9';
+terminal ID: /[_A-Za-z][_A-Za-z0-9-]*/;
+terminal FLOAT returns number: /-?(?:(?:0|[1-9][0-9]*)\.(?!\.)[0-9]*|\.[0-9]+)/;
+terminal INT returns number: /-?(?:0|[1-9][0-9]*)/;
 
-// a line holding only a comment counts as a blank line: it must not produce a second NL
-terminal NL: ('\r' | '\n') ((' ' | '\t')* COMMENT? ('\r' | '\n'))*;
-hidden terminal WS: (' ' | '\t')+;
-
-// a comment at the end of a line holding a statement; a comment-only line is swallowed by NL
-hidden terminal SL_COMMENT: COMMENT;
-terminal fragment COMMENT: '#' !('\n' | '\r')*;
+// A line end, swallowing the blank and comment lines that follow so that they never produce a
+// second NL. The lexer adds one at the end of the file when the last line has none.
+terminal NL: /\r?\n(?:[ \t]*(?:#[^\r\n]*)?\r?\n)*/;
+hidden terminal WS: /[ \t]+/;

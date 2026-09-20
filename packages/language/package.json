@@ -1,5 +1,5 @@
 {
-    "name": "bookshelf-doc-language",
+    "name": "bsdoc-language",
     "description": "The language specific package",
     "version": "0.0.1",
     "license": "MPL-2.0",
@@ -31,7 +31,7 @@
         "clean": "shx rm -fr *.tsbuildinfo out",
         "build": "echo 'No build step'",
         "build:clean": "npm run clean && npm run build",
-        "test": "node test/typing.test.mjs && node test/highlight.test.mjs && node test/completion.test.mjs && node test/parse.test.mjs",
+        "test": "node test/parse.test.mjs && node test/validation.test.mjs && node test/completion.test.mjs && node test/highlight.test.mjs",
         "langium:generate": "langium generate",
         "langium:watch": "langium generate --watch"
     },

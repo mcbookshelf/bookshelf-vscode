@@ -1,96 +1,50 @@
-type Type = PrimitiveType | CompositeType;
+import './model';
 
-type PrimitiveType =  RangeablePrimitiveType | BoolType | AnyType | AbstractEntityType | PositionType | RotationType | DimensionType;
+type Type = PrimitiveType | ListType | StructType | ReferenceType | ArrayType | UnionType;
 
-type RangeablePrimitiveType = NumericType | StringType;
-
-type MinecraftArrayType = IntType | ByteType | LongType;
-
-type NumericType = MinecraftArrayType | ShortType | FloatType | DoubleType | NumberType;
-
-interface IntType {
-    valueRange: NumberRangeType;
+interface PrimitiveType {
+    attributes: string[];
+    name: string;
+    range?: Range;
 }
 
-interface ByteType {
-    valueRange: NumberRangeType;
-
-}
-
-interface ShortType {
-    valueRange: NumberRangeType;
-}
-
-interface LongType {
-    valueRange: NumberRangeType;
-}
-
-interface FloatType {
-    valueRange: NumberRangeType;
-}
-
-interface DoubleType {
-    valueRange: NumberRangeType;
-}
-
-interface StringType {
-    valueRange: NumberRangeType;
-}
-
-interface NumberType {
-    valueRange: NumberRangeType;
-}
-
-interface BoolType {}
-interface AnyType {}
-interface PlayerType {}
-interface EntityType {}
-interface XyType {}
-interface XyzType {}
-interface OverworldType {}
-interface NetherType {}
-interface EndType {}
-
-type AbstractEntityType = EntityType | PlayerType;
-type PositionType = XyzType | AbstractEntityType;
-type RotationType = XyType | AbstractEntityType;
-type DimensionType = OverworldType | NetherType | EndType | AnyType;
-
-type CompositeType = ArrayType | ListType | TupleType | StructType | UnionType;
-
-interface NumberRangeType {
-    value?: number;
-    min?: number;
-    max?: number;
-}
-
+/** 'int[]': an array of one of five primitives, attributed as a whole. */
 interface ArrayType {
-    elements: Type[];
-    sizeRange: NumberRangeType;
+    attributes: string[];
+    element: PrimitiveType;
+    range?: Range;
 }
 
 interface ListType {
-    element: Type
-    sizeRange: NumberRangeType;
-}
-
-interface TupleType {
-    elements: Type[]
+    attributes: string[];
+    elements: Type[];
+    tuple: boolean;
+    range?: Range;
 }
 
 interface StructType {
-    entries: StructTypeEntry[];
+    attributes: string[];
+    entries: StructEntry[];
 }
 
-interface StructTypeEntry {
+interface StructEntry {
+    name: string;
     optional: boolean;
-    property: string;
     type: Type;
-    description: string[];
+    description?: string;
 }
 
 interface UnionType {
-    left: Type;
-    operator: '|';
-    right: Type;
+    members: Type[];
+}
+
+interface ReferenceType {
+    attributes: string[];
+    reference: @Variable;
+}
+
+interface Range {
+    value?: number;
+    min?: number;
+    max?: number;
 }

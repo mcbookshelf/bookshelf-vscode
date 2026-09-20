@@ -1,9 +1,9 @@
 {
-    "projectName": "BookshelfDoc",
+    "projectName": "Bsdoc",
     "languages": [
         {
-            "id": "bookshelf-doc",
-            "grammar": "src/bookshelf-doc.langium",
+            "id": "bsdoc",
+            "grammar": "src/bsdoc.langium",
             "fileExtensions": [
                 ".bs"
             ]

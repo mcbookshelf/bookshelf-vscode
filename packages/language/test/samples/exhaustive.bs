@@ -1,0 +1,176 @@
+# a comment line may open the file, before the description
+> Every construct the .bs grammar accepts, gathered in one document.
+> The description may run over several lines.
+
+name: Exhaustive
+slug: bookshelf-exhaustive
+version: 5.0.0
+tags: runtime, datapack-only
+weak_dependencies: bs.log, bs.block
+documentation: https://docs.mcbookshelf.dev/en/latest/modules/exhaustive.html
+
+# a comment between the properties, at any indentation
+  # and indented
+$done = state > a slot definition: the kind comes first
+$shared = storage bs.exhaustive:shared payload/levels: {
+  levels: int > a storage definition with an explicit target and path
+} > reused below by several features
+$args = arguments: {
+  amount: int > a required entry becomes a macro argument
+  reason?: string > an optional one goes under 'with'
+}
+$block = #[id="block"] string > a type alias, attributed
+$block_state = $block | {
+  id: $block > an alias used inside another alias
+  properties?: #[as=mcdoc:block_states[[id]]] {} > an attribute with nested brackets, and any compound
+}
+$ratio = double @ 0..1
+  > a doc on the next line
+$every = {
+  whole: int
+  tiny: byte
+  small: short
+  big: long
+  single: float @ 0.5..1.
+  wide: double @ ..2.5
+  loose: number @ -1..1
+  text: string
+  flag: boolean
+  anything: any
+  compound: {}
+  ints: int[] @ 4
+  bytes: byte @ 0..1 [] @ 1..
+  longs: long[] @ ..8
+  names: [string] @ 2
+  rows: [{
+    cell: int
+  }] @ 1..3
+  pair: [int, string]
+  lone: [int,]
+  either: int | string > a union
+  nested: {
+    leaf: {
+      depth: short
+    }
+  }
+  maybe?: boolean, > a trailing comma, as in mcdoc
+  aliased: $block
+  attributed: #[id="item"] string
+  merged: #[id="item"] $block > an attribute merged onto the aliased type
+  function: string > an entry named after a keyword
+  storage: int
+  int: int
+  documented: int
+    > a doc on the next line
+}
+
+feature function add_levels
+  authors: Aksiome, Leirof
+  created: 2022/04/14 1.18.2
+  updated: 2026/11/19 26.3
+  deprecated: false
+  experimental: true
+
+  context executor: player | entity > an executor takes players and entities
+  context position: xyz
+    > a doc on the next line
+  context rotation: xy
+  context dimension: overworld | nether | end | any
+  context state
+  input $shared > a reference with its own doc, overriding the one of the definition
+  input storage in: {
+    levels: int @ 0..
+  }
+  input state
+  output storage: int[] @ 3 > a Minecraft array, bounded in size
+  output result
+  output success
+  output state > every construct on one line
+  output $done
+
+feature function bs.exhaustive:set_levels > A feature id written with its namespace.
+  authors: Aksiome
+  created: 2022/04/14 1.18.2
+  updated: 2022/04/14 1.18.2
+
+  context executor: entity[] > an array of entities
+  input macro: {
+    levels: int > a hand-written macro
+  }
+  input storage bs.exhaustive:shared payload/levels: {
+    levels: int > the same storage path as $shared, with the same type
+  }
+  output $done
+
+feature function has_levels > The same name as the predicate below: another registry, so allowed.
+  authors: Aksiome
+  created: 2023/01/02 1.19
+  updated: 2023/12/31 1.20.4
+
+  input arguments: {
+    levels: int > a storage and a macro derived from it
+  }
+  output storage: $every
+
+feature predicate has_levels
+  > A feature doc on the next line.
+  authors: Aksiome
+  created: 2023/01/02 1.19
+  updated: 2023/12/31 1.20.4
+
+  context executor: player
+  input storage: {
+    whole: int
+  }
+  output success > whether the player has levels
+
+feature loot_table roll_levels > The context kinds with their default types.
+  authors: Leirof
+  created: 2024/02/29 1.20.4
+  updated: 2024/02/29 1.20.4
+
+  context executor
+  context position
+  context rotation
+  context dimension
+  input state
+  output state
+
+feature context_int_provider level_count > A registry holding underscores.
+  authors: Aksiome
+  created: 2025/07/15 1.21.1
+  updated: 2025/07/15 1.21.1
+
+  input storage: {
+    count: int
+  }
+  output result: int @ 0..
+
+feature context_float_provider level_ratio > A float provider.
+  authors: Aksiome
+  created: 2025/06/01 1.21
+  updated: 2025/06/01 1.21
+
+  context position: entity
+  output result: float
+
+feature function_tag on_level_up > A function tag.
+  authors: Aksiome, Leirof
+  created: 2026/09/13 26.3
+  updated: 2026/09/13 26.3
+
+  input $args
+  output storage path/only.nested.deep: {
+    value: number > a path: '/' belongs to a name, '.' nests
+  }
+
+feature block_tag can_occlude > A block tag declares no slot.
+  authors: Aksiome
+  created: 2026/09/13 26.3
+  updated: 2026/09/13 26.3
+
+feature entity_type_tag is_mob > The last registry.
+  authors: Aksiome
+  created: 2026/09/13 26.3
+  updated: 2026/09/13 26.3
+# a trailing comment line

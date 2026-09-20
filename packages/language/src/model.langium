@@ -1,68 +1,50 @@
 import './type.model';
 
+type HeadItem = Variable | Property;
+
+type FeatureItem = Slot | Property;
+
+type Registry = 'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag';
+
+type Role = 'input' | 'context' | 'output';
+
+type Kind = 'storage' | 'arguments' | 'executor' | 'rotation' | 'position' | 'dimension' | 'state' | 'result' | 'success' | 'macro';
+
 interface Module {
-    description: string[];
-    slots: ModuleSlot[];
-}
-
-type ModuleSlot = Feature | Variable | Property;
-
-interface Feature {
-    description: string[];
-    registry: string;
-    id: string;
-    slots: FeatureSlot[];
-}
-
-type FeatureSlot = Input | Context | Output | Variable | Property;
-
-interface AbstractFeatureSlotExpression {
-    description: string[];
-}
-
-interface FeatureSlotExpression extends AbstractFeatureSlotExpression {
-    kind: Kind;
-    definition?: Type;
-}
-
-interface Input {
-    expression: AbstractFeatureSlotExpression;
-}
-
-interface Context {
-    expression: AbstractFeatureSlotExpression;
-}
-
-interface Output {
-    expression: AbstractFeatureSlotExpression;
-}
-
-interface Storage {
-    id?: string;
-    path?: string;
-}
-
-type Kind = Storage | Executor | Position | Rotation | Dimension | State | Success | Result | Macro;
-
-interface Executor {}
-interface Position {}
-interface Rotation {}
-interface Dimension {}
-interface State {}
-interface Success {}
-interface Result {}
-interface Macro {}
-
-interface Variable {
-    name: string;
-    expression: FeatureSlotExpression;
-}
-
-interface VariableReference extends AbstractFeatureSlotExpression {
-    reference: @Variable;
+    description?: string;
+    head: HeadItem[];
+    features: Feature[];
 }
 
 interface Property {
     key: string;
-    value: string;
+    value?: string;
+}
+
+interface Variable {
+    name: string;
+    declaration?: Declaration;
+    type?: Type;
+    description?: string;
+}
+
+interface Feature {
+    registry: Registry;
+    id: string;
+    description?: string;
+    items: FeatureItem[];
+}
+
+interface Slot {
+    role: Role;
+    reference?: @Variable;
+    declaration?: Declaration;
+    description?: string;
+}
+
+interface Declaration {
+    kind: Kind;
+    id?: string;
+    path: string[];
+    type?: Type;
 }
