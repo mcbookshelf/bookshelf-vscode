@@ -44,6 +44,6 @@ Registry returns Registry:
 PathName returns string:
     Name ('/' Name)*;
 
-// a resource location, or a bare name in the namespace of the module
+// a resource location, or a bare path in the namespace of the module
 FeatureId returns string:
-    RESOURCE_LOCATION | Name;
+    RESOURCE_LOCATION | PathName;
