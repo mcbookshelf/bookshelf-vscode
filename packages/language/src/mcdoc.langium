@@ -51,7 +51,7 @@ PrimitiveName returns string:
     | 'boolean' | 'any' | 'player' | 'entity' | 'xyz' | 'xy' | 'overworld' | 'nether' | 'end';
 
 Name returns string:
-    ID | 'feature' | 'storage' | 'arguments' | PrimitiveName
+    ID | INT | 'feature' | 'storage' | 'arguments' | PrimitiveName
     | 'executor' | 'rotation' | 'position' | 'dimension' | 'state' | 'result' | 'success' | 'macro'
     | 'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag';
 

@@ -142,6 +142,7 @@ assert.deepEqual((await first(`  input storage function/int.byte: int\n`)).items
 assert.equal((await check(`${header}feature function bs.x:fill > doc\n`)).features[0].id, 'bs.x:fill', 'a namespaced feature id');
 assert.equal((await check(`${header}feature function int > doc\n`)).features[0].id, 'int', 'a keyword as a feature id');
 assert.equal((await check(`${header}feature predicate get_entity/living > doc\n`)).features[0].id, 'get_entity/living', 'a path as a feature id');
+assert.equal((await check(`${header}feature predicate flag/1 > doc\n`)).features[0].id, 'flag/1', 'a number as a path segment');
 assert.equal((await check(`${header}feature function fill\n  > next line doc\n`)).features[0].description, 'next line doc');
 assert.deepEqual((await check(`${header}feature function a\nfeature function b\nfeature predicate a\n`)).features.map(f => f.id), ['a', 'b', 'a'], "a feature runs until the next 'feature' line");
 assert.ok(!await parses(`${header}feature function a context state > doc\n`), 'a slot needs its own line');
