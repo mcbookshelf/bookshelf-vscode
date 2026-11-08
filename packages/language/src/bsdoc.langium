@@ -38,7 +38,7 @@ KindName returns Kind:
     'executor' | 'rotation' | 'position' | 'dimension' | 'state' | 'result' | 'success' | 'macro';
 
 Registry returns Registry:
-    'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag';
+    'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag' | 'structure';
 
 // a segment of a storage path: '/' is part of the name, '.' separates the segments
 PathName returns string:

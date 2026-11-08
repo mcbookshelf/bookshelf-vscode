@@ -138,6 +138,8 @@ assert.match(scopeOf('feature function bs.xp:add_levels', 'bs.xp'), /^entity\.na
 assert.match(scopeOf('feature function bs.xp:add_levels', 'add_levels'), /^entity\.name\.function/);
 assert.match(scopeOf('feature function_tag on_level_up', 'function_tag'), /^storage\.type\.registry/);
 assert.match(scopeOf('feature entity_type_tag is_mob', 'entity_type_tag'), /^storage\.type\.registry/);
+assert.match(scopeOf('feature structure oak/1', 'structure'), /^storage\.type\.registry/);
+assert.match(scopeOf('feature structure oak/1', 'structure'), /^storage\.type\.registry/);
 assert.match(scopeOf('  context state > doc', 'context'), /^keyword\.control\.port/);
 assert.match(scopeOf('  context state > doc', 'state'), /^storage\.type\.kind/);
 assert.match(scopeOf('  input arguments: {', 'arguments'), /^storage\.type\.kind/);

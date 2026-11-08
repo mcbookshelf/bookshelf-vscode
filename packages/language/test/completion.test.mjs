@@ -22,7 +22,7 @@ const proposalsAt = async (text) => {
     return labels.sort();
 };
 
-const REGISTRIES = ['block_tag', 'context_float_provider', 'context_int_provider', 'entity_type_tag', 'function', 'function_tag', 'loot_table', 'predicate'];
+const REGISTRIES = ['block_tag', 'context_float_provider', 'context_int_provider', 'entity_type_tag', 'function', 'function_tag', 'loot_table', 'predicate', 'structure'];
 const KINDS = ['arguments', 'dimension', 'executor', 'macro', 'position', 'result', 'rotation', 'state', 'storage', 'success'];
 const DATA = ['any', 'boolean', 'byte', 'double', 'float', 'int', 'long', 'number', 'short', 'string'];
 

@@ -53,7 +53,7 @@ PrimitiveName returns string:
 Name returns string:
     ID | INT | 'feature' | 'storage' | 'arguments' | PrimitiveName
     | 'executor' | 'rotation' | 'position' | 'dimension' | 'state' | 'result' | 'success' | 'macro'
-    | 'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag';
+    | 'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag' | 'structure';
 
 // the tail of a line: its doc, on the same line or on the next one, then the line end
 fragment End:

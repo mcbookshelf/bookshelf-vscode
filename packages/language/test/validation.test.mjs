@@ -87,6 +87,7 @@ await fails(feature(`  output state\n`, 'context_int_provider'), 'a context_int_
 assert.deepEqual(await errorsOf(header + feature(`  context state\n  input state\n  output state\n`, 'block_tag')),
     ['10: a block_tag declares no context', '11: a block_tag declares no input', '12: a block_tag declares no output']);
 await fails(feature(`  context position\n`, 'entity_type_tag'), 'an entity_type_tag declares no context');
+await fails(feature(`  output success\n`, 'structure'), 'a structure declares no output');
 // a slot through a '$' definition is checked all the same
 await fails(`$pos = position\n` + feature(`  input $pos\n`), 'a function takes no position as input, only storage, arguments, macro or state', 11);
 

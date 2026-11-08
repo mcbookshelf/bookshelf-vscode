@@ -4,7 +4,7 @@ type HeadItem = Variable | Property;
 
 type FeatureItem = Slot | Property;
 
-type Registry = 'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag';
+type Registry = 'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag' | 'structure';
 
 type Role = 'input' | 'context' | 'output';
 
