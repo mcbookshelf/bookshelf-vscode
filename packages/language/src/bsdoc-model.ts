@@ -40,7 +40,7 @@ export const resultType = (registry: Registry | undefined): 'int' | 'float' => r
 
 /** What each registry may declare, by role. */
 const FUNCTION_KINDS: Record<Role, readonly Kind[]> = { context: CONTEXT_KINDS, input: ['storage', 'arguments', 'macro', 'state'], output: ['storage', 'state', 'result', 'success'] };
-const TAG_KINDS: Record<Role, readonly Kind[]> = { context: [], input: [], output: [] };
+const NO_KINDS: Record<Role, readonly Kind[]> = { context: [], input: [], output: [] };
 export const REGISTRY_KINDS: Record<Registry, Record<Role, readonly Kind[]>> = {
     function: FUNCTION_KINDS,
     function_tag: FUNCTION_KINDS,
@@ -48,8 +48,9 @@ export const REGISTRY_KINDS: Record<Registry, Record<Role, readonly Kind[]>> = {
     loot_table: { context: CONTEXT_KINDS, input: ['storage', 'state'], output: ['state'] },
     context_int_provider: { context: CONTEXT_KINDS, input: ['storage', 'state'], output: ['result'] },
     context_float_provider: { context: CONTEXT_KINDS, input: ['storage', 'state'], output: ['result'] },
-    block_tag: TAG_KINDS,
-    entity_type_tag: TAG_KINDS,
+    block_tag: NO_KINDS,
+    entity_type_tag: NO_KINDS,
+    structure: NO_KINDS,
 };
 
 // --- the file

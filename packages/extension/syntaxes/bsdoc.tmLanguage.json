@@ -112,7 +112,7 @@
     },
     "feature": {
       "comment": "'feature', a registry (a kind of feature, not a type), then the feature id",
-      "match": "^\\s*(feature)\\b(?:\\s+(function_tag|function|predicate|loot_table|context_int_provider|context_float_provider|block_tag|entity_type_tag)\\b(?:\\s+([A-Za-z0-9_.:/-]+))?)?",
+      "match": "^\\s*(feature)\\b(?:\\s+(function_tag|function|predicate|loot_table|context_int_provider|context_float_provider|block_tag|entity_type_tag|structure)\\b(?:\\s+([A-Za-z0-9_.:/-]+))?)?",
       "captures": {
         "1": {
           "name": "keyword.control.feature.bsdoc"

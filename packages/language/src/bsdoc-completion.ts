@@ -11,7 +11,7 @@ import {
 const KIND_RULES = new Set(['KindName', 'Declaration']);
 const TYPE_RULES = new Set(['PrimitiveName', 'ArrayElement']);
 
-const REGISTRIES = new Set(['function', 'function_tag', 'predicate', 'loot_table', 'context_int_provider', 'context_float_provider', 'block_tag', 'entity_type_tag']);
+const REGISTRIES = new Set(['function', 'function_tag', 'predicate', 'loot_table', 'context_int_provider', 'context_float_provider', 'block_tag', 'entity_type_tag', 'structure']);
 const ROLES = new Set(['input', 'context', 'output']);
 const RESOURCE_LOCATION = /^[a-z0-9_.-]+:[a-z0-9_.\/-]+$/;
 

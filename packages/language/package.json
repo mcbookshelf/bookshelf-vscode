@@ -36,7 +36,7 @@
         "langium:watch": "langium generate --watch"
     },
     "dependencies": {
-        "chevrotain": "~11.0.3",
+        "chevrotain": "~13.2.0",
         "langium": "~4.4.0",
         "typir": "^0.3.3",
         "typir-langium": "^0.3.3",

@@ -169,7 +169,12 @@ feature block_tag can_occlude > A block tag declares no slot.
   created: 2026/09/13 26.3
   updated: 2026/09/13 26.3
 
-feature entity_type_tag is_mob > The last registry.
+feature entity_type_tag is_mob > An entity type tag declares no slot.
+  authors: Aksiome
+  created: 2026/09/13 26.3
+  updated: 2026/09/13 26.3
+
+feature structure oak/1 > The last registry: a structure declares no slot.
   authors: Aksiome
   created: 2026/09/13 26.3
   updated: 2026/09/13 26.3
