@@ -23,11 +23,15 @@ function resolve(patterns) {
 
 const topLevel = resolve(grammar.patterns);
 
-/** The leftmost match of `rules` in `line` from `offset`, the rule listed first winning a tie. */
-function leftmost(rules, line, offset) {
+/**
+ * The leftmost match of `rules` in `line` from `offset`, the rule listed first winning a tie.
+ * '\G' matches at `anchor`, where the open block began on this line, and nowhere without one.
+ */
+function leftmost(rules, line, offset, anchor = -1) {
     let best;
     for (const rule of rules) {
-        const regex = new RegExp(rule.match ?? rule.begin, 'dg');
+        const source = (rule.match ?? rule.begin).replaceAll('\\G', anchor < 0 ? '(?!)' : `(?<=^.{${anchor}})`);
+        const regex = new RegExp(source, 'dg');
         regex.lastIndex = offset;
         const match = regex.exec(line);
         if (match && (best === undefined || match.index < best.index)) {
@@ -46,21 +50,25 @@ function leftmost(rules, line, offset) {
 function scopeLine(line, blocks = []) {
     const scopes = new Array(line.length).fill(undefined);
     let offset = 0;
+    let anchor = -1;
     while (offset <= line.length) {
         const block = blocks.at(-1);
         // the end of the open block competes with its own patterns, and wins a tie
-        const best = leftmost(block ? [{ match: block.end, captures: block.endCaptures, isEnd: true }, ...resolve(block.patterns)] : topLevel, line, offset);
+        const rules = block ? [{ match: block.end, captures: block.endCaptures, isEnd: true }, ...resolve(block.patterns)] : topLevel;
+        const best = leftmost(rules, line, offset, anchor);
         if (best === undefined) {
             break;
         }
         paint(scopes, line, best, best.rule);
+        anchor = -1;
         if (best.rule.isEnd) {
             blocks.pop();
-            if (best[0].length === 0) {
+            if (best[0].length === 0 && best.index < line.length) {
                 continue; // a lookahead: the line is then scanned with the rules outside the block
             }
         } else if (best.rule.begin) {
             blocks.push(best.rule);
+            anchor = best.index + best[0].length;
         }
         offset = Math.max(best.index + best[0].length, offset + 1);
     }
@@ -201,6 +209,19 @@ assert.match(scopeOf('$max_distance: number @ 0..2047 > doc', 'number'), /^suppo
 assert.match(scopeOf('$position:', 'position'), /^variable\.parameter/);
 assert.match(scopeOf('  $ray', '$'), /^keyword\.control\.bsdoc/);
 assert.match(scopeOf('  $ray', 'ray'), /^variable\.parameter/);
+// one line after the name of a definition is scoped as in a feature
+assert.match(scopeOf('$updated: output state > the bar is updated', 'updated'), /^variable\.parameter/);
+assert.match(scopeOf('$updated: output state > the bar is updated', 'output'), /^keyword\.control\.slot/);
+assert.match(scopeOf('$updated: output state > the bar is updated', 'state'), /^storage\.type\.kind/);
+assert.match(scopeOf('$updated: output state > the bar is updated', 'the bar'), /^comment\.block\.documentation/);
+assert.match(scopeOf('$viewer: @executor: player > who looks', '@executor'), /^keyword\.control\.context/);
+assert.match(scopeOf('$viewer: @executor: player > who looks', 'player'), /^support\.type\.primitive/);
+assert.match(scopeOf('$dated: since 2024/01/01 1.20', 'since'), /^support\.type\.property-name/);
+assert.match(scopeOf('$dated: since 2024/01/01 1.20', '2024'), /^string\.unquoted/);
+assert.match(scopeOf('$flagged: deprecated', 'deprecated'), /^support\.type\.property-name/);
+assert.match(scopeOf('$operands: input storage bs.x:shared in:', 'bs.x:shared'), /^entity\.name\.function/);
+assert.match(scopeOf('$operands: input storage:\n  a: int', 'a'), /^meta\.field\.name/, 'the block ends with its line');
+assert.match(scopeOf('$input: int', 'int'), /^support\.type\.primitive/, 'a type, not a line');
 // a list, and the properties of its items: free text, whatever the key
 assert.match(scopeOf('$face[bottom, east]', 'face'), /^variable\.parameter/);
 assert.match(scopeOf('$face[bottom, east]', 'bottom'), /^variable\.other\.enummember/);

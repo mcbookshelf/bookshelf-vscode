@@ -64,7 +64,7 @@ export class BsdocTokenBuilder extends IndentationAwareTokenBuilder {
     /** The value of a line opened by a value word, unless a colon makes that word a field, or of a list property. */
     private matchText(text: string, offset: number, tokens: IToken[]): [string] | null {
         const last = tokens.length - 1;
-        if (VALUE_WORDS.has(nameOf(tokens, last)) && startsLine(tokens, last)) {
+        if (VALUE_WORDS.has(nameOf(tokens, last)) && opensLine(tokens, last)) {
             fieldColon.lastIndex = offset;
             if (fieldColon.test(text)) {
                 return null;
@@ -90,7 +90,7 @@ export class BsdocTokenBuilder extends IndentationAwareTokenBuilder {
     /** After 'input' or 'output' and a kind: anywhere else 'a.b:c' is a name, a colon and a type. */
     private matchResourceLocation(text: string, offset: number, tokens: IToken[]): RegExpExecArray | null {
         const last = tokens.length - 1;
-        if (!KINDS.has(nameOf(tokens, last)) || !ROLES.has(nameOf(tokens, last - 1)) || !startsLine(tokens, last - 1)) {
+        if (!KINDS.has(nameOf(tokens, last)) || !ROLES.has(nameOf(tokens, last - 1)) || !opensLine(tokens, last - 1)) {
             return null;
         }
         resourceLocation.lastIndex = offset;
@@ -154,3 +154,7 @@ const nameOf = (tokens: IToken[], index: number): string => tokens[index]?.token
 
 /** Whether the token at `index` is the first of its line. */
 const startsLine = (tokens: IToken[], index: number): boolean => index === 0 || LINE_STARTS.has(nameOf(tokens, index - 1));
+
+/** Whether the token at `index` opens a feature line: the first of its line, or after the name of a definition, '$x: since ...'. */
+const opensLine = (tokens: IToken[], index: number): boolean =>
+    startsLine(tokens, index) || (nameOf(tokens, index - 1) === ':' && nameOf(tokens, index - 2) === 'VARIABLE' && startsLine(tokens, index - 2));

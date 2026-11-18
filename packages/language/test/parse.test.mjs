@@ -182,6 +182,29 @@ assert.ok(!await parses(`${header}$x = int\n`), 'the old syntax, with an equals 
 assert.ok(!await parses(`${header}$axis-aligned: int\n`), "a '$' name holds no '-'");
 assert.equal((await check(`${header}$dimension: [overworld, nether, end]\n`)).head.at(-1).type.tuple, true, 'after a colon comes a type: this is a tuple, not a list');
 
+// one line can follow the name of a definition directly: no line starts like a type
+const inline = await check(`${header}$updated: output state > the bar is updated
+$viewer: @executor: player > who looks
+$dated: since 2024/01/01 1.20
+$flagged: deprecated
+$operands: input storage bs.x:shared in: > the operands
+  a: int
+$alias: $viewer
+$input: int
+`);
+assert.deepEqual(types(definition(inline, 'updated').body), ['Slot']);
+assert.equal(definition(inline, 'updated').body[0].description, 'the bar is updated');
+assert.equal(definition(inline, 'updated').description, undefined, 'the doc is the one of the line');
+assert.equal(definition(inline, 'viewer').body[0].kind, '@executor');
+assert.equal(definition(inline, 'viewer').body[0].type.name, 'player');
+assert.equal(definition(inline, 'dated').body[0].value, '2024/01/01 1.20');
+assert.equal(definition(inline, 'flagged').body[0].key, 'deprecated');
+assert.equal(definition(inline, 'operands').body[0].id, 'bs.x:shared');
+assert.deepEqual(definition(inline, 'operands').body[0].body.map(field => field.name), ['a']);
+assert.equal(definition(inline, 'alias').type.$type, 'ReferenceType', "a paste aside: '$a: $b' is a type");
+assert.equal(definition(inline, 'input').type.name, 'int', 'a name is not a line');
+assert.ok(!await parses(`${header}$two: @position @rotation\n`), 'one line only');
+
 // --- features and their lines
 
 const feature = (body) => `${header}feature function fill_block > Fill a region.

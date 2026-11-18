@@ -22,10 +22,12 @@ HeadKey returns HeadKey:
 Metadata returns Metadata:
     (key=('authors' | 'contributors' | 'since') value=TEXT? | key=('deprecated' | 'experimental')) NL;
 
-// '$x: type', '$x:' then fields or feature lines (told apart by validation), '$x[item, ...]' then properties
+// '$x: type', '$x:' then fields or feature lines (told apart by validation), '$x[item, ...]' then properties.
+// One line can follow the name directly, since no line starts like a type: '$x: output state > doc'.
 Definition returns Definition:
     name=VARIABLE
     ( ':' ( type=Type MemberBlock
+          | body+=DefinitionLine
           | NL INDENT (description=DOC NL)? body+=BlockItem+ DEDENT )
     | list?='[' items+=Name (',' items+=Name)* ']'
       ( ':' NL INDENT properties+=ListProperty+ DEDENT | NL )
@@ -33,6 +35,10 @@ Definition returns Definition:
 
 BlockItem returns BlockItem:
     Line | Field;
+
+// A paste is left out: '$a: $b' is a type.
+DefinitionLine returns Line:
+    Metadata | Context | Slot;
 
 // 'key: text'
 ListProperty returns ListProperty:

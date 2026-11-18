@@ -33,6 +33,9 @@
       "include": "#slot"
     },
     {
+      "include": "#definition-line"
+    },
+    {
       "include": "#definition"
     },
     {
@@ -163,7 +166,7 @@
     },
     "metadata": {
       "comment": "a metadata line, in the head or in a feature: its value is free text, in which a list is replaced; a colon makes the word a field",
-      "match": "^\\s*(authors|contributors|since)\\b(?![-\\w]|\\s*\\??\\s*:)[ \\t]*(.*)$",
+      "match": "(?:^\\s*|\\G)(authors|contributors|since)\\b(?![-\\w]|\\s*\\??\\s*:)[ \\t]*(.*)$",
       "captures": {
         "1": {
           "name": "support.type.property-name.bsdoc"
@@ -180,7 +183,7 @@
     },
     "metadata-flag": {
       "comment": "a metadata line without a value",
-      "match": "^\\s*(deprecated|experimental)\\b(?![-\\w]|\\s*\\??\\s*:)",
+      "match": "(?:^\\s*|\\G)(deprecated|experimental)\\b(?![-\\w]|\\s*\\??\\s*:)",
       "captures": {
         "1": {
           "name": "support.type.property-name.bsdoc"
@@ -209,7 +212,7 @@
     },
     "context": {
       "comment": "what a feature runs as or at",
-      "match": "^\\s*(@(?:executor|position|rotation|dimension|state))\\b",
+      "match": "(?:^\\s*|\\G)(@(?:executor|position|rotation|dimension|state))\\b",
       "captures": {
         "1": {
           "name": "keyword.control.context.bsdoc"
@@ -218,7 +221,7 @@
     },
     "slot": {
       "comment": "'input' or 'output', a kind, then a resource location and a path when the storage is not the default one; a colon after the first word makes it a field",
-      "match": "^\\s*(input|output)\\b(?![-\\w]|\\s*\\??\\s*:)(?:[ \\t]+(state|result|success|macro|storage|arguments)\\b(?![-\\w]))?(?:[ \\t]+([a-z0-9_-]+(?:\\.[a-z0-9_-]+)+:[a-z0-9_./-]+))?(?:[ \\t]+([A-Za-z0-9_/-]+))?",
+      "match": "(?:^\\s*|\\G)(input|output)\\b(?![-\\w]|\\s*\\??\\s*:)(?:[ \\t]+(state|result|success|macro|storage|arguments)\\b(?![-\\w]))?(?:[ \\t]+([a-z0-9_-]+(?:\\.[a-z0-9_-]+)+:[a-z0-9_./-]+))?(?:[ \\t]+([A-Za-z0-9_/-]+))?",
       "captures": {
         "1": {
           "name": "keyword.control.slot.bsdoc"
@@ -233,6 +236,51 @@
           "name": "support.type.property-name.bsdoc"
         }
       }
+    },
+    "definition-line": {
+      "comment": "a '$' definition of one line, written after its name: the line is scoped as in a feature, '\\G' standing for where the name ends",
+      "begin": "^(\\$)([A-Za-z_][A-Za-z0-9_]*)(\\s*:)[ \\t]*(?=@|(?:input|output|authors|contributors|since|deprecated|experimental)\\b(?![-\\w]))",
+      "end": "$",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.bsdoc"
+        },
+        "2": {
+          "name": "variable.parameter.bsdoc"
+        },
+        "3": {
+          "name": "punctuation.separator.key-value.bsdoc"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#metadata"
+        },
+        {
+          "include": "#metadata-flag"
+        },
+        {
+          "include": "#context"
+        },
+        {
+          "include": "#slot"
+        },
+        {
+          "include": "#documentation"
+        },
+        {
+          "include": "#attribute"
+        },
+        {
+          "include": "#reference"
+        },
+        {
+          "include": "#type-expression"
+        },
+        {
+          "include": "#identifier"
+        }
+      ]
     },
     "definition": {
       "comment": "a '$' definition: the '$' is an injection marker (a keyword), the name a parameter, which most themes colour",

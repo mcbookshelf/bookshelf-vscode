@@ -23,8 +23,7 @@ tags runtime
 authors Aksiome, Leirof
 since 2022/04/14 1.18.2
 
-$updated:
-  output state > the experience bar is updated
+$updated: output state > the experience bar is updated
 
 feature function add_levels > Add levels to players.
   @executor: player[] > players to add levels to

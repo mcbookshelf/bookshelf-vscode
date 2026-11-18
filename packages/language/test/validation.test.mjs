@@ -86,6 +86,11 @@ await fails(`$lines:\n  @position\n` + feature(`  $lines\n  input storage:\n    
 await fails(`$t: int\n` + feature(`  input storage:\n    $t\n    x: $t\n`), "'$t' is a type, not a struct: it is declared on line 8", 11);
 await ok(`$s: struct > a struct with a doc\n  x: int\n$alias: $s\n` + feature(`  input storage:\n    $alias\n`));
 await ok(`$a:\n  @position\n$b:\n  $a\n  @rotation\n` + feature(`  $b\n`));
+// one line written after a name is lines all the same
+await ok(`$updated: output state > doc\n$dated: since 2024/01/01 1.20\n` + feature(`  $dated\n  $updated\n`));
+await fails(`$updated: output state > doc\n` + feature(`  input storage: $updated\n  $updated\n`), "'$updated' is lines, not a type: it is declared on line 8", 10);
+await fails(`$pos: @position\n` + feature(`  $pos\n`, 'block_tag'), "a block_tag declares no context (pasted from '$pos')", 10);
+await fails(`$wrong: @executor: xyz\n` + feature(`  $wrong\n`), "'xyz' is not a type @executor takes", 8);
 // a block holds either fields or feature lines
 assert.deepEqual(await errorsOf(`${header}$mixed:\n  x: int\n  @position\n  since 2022/04/14 1.18.2\n  y: int\n` + feature(`  input storage: $mixed\n`)),
     ['10: a block holds either fields or feature lines, not both', '11: a block holds either fields or feature lines, not both']);

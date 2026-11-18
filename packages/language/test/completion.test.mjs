@@ -77,8 +77,11 @@ assert.deepEqual(await proposalsAt(inFeature('  input storage:\n    p: [<|>')), 
 assert.deepEqual(await proposalsAt(inFeature('  input storage:\n    p: #[id="block"] <|>')), DATA);
 assert.deepEqual(await proposalsAt(inFeature('  input storage:\n    p:\n      q: <|>')), DATA);
 // a definition takes any type, and its block either fields or lines
+// ... or one line, written after its name
 const defined = await proposalsAt(`${header}$v: <|>`);
-assert.deepEqual(defined, [...DATA, 'end', 'entity', 'nether', 'overworld', 'player', 'xy', 'xyz'].sort());
+assert.deepEqual(defined, [...DATA, 'end', 'entity', 'nether', 'overworld', 'player', 'xy', 'xyz', ...CONTEXTS, ...METADATA, 'input', 'output'].sort());
+assert.deepEqual(await proposalsAt(`${header}$v: output <|>`), ['arguments', 'macro', 'result', 'state', 'storage', 'success']);
+assert.deepEqual(await proposalsAt(`${header}$v: @position: <|>`), ['entity', 'player', 'xyz']);
 assert.deepEqual(await proposalsAt(`${header}$v:\n  <|>`), [...CONTEXTS, ...METADATA, 'input', 'output'].sort());
 // the text of a list property is free
 assert.deepEqual(await proposalsAt(`${header}$v[a]:\n  key: <|>`), []);

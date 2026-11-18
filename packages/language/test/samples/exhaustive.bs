@@ -67,8 +67,11 @@ $every:
   int: int
   1: int > a number as a name
   $position
-$done:
-  output state > lines, pasted in a feature
+$done: output state > one line, pasted in a feature, written after the name
+$dated: since 2024/01/01 1.20
+$viewer: @executor: player > a context after the name
+$operands: input storage operands:
+  a: int > a line after the name, with its own fields
 $shared:
   contributors Bafy78
   @position > a position, with its default type
@@ -114,8 +117,11 @@ feature function bs.exhaustive:set_levels > A feature id written with its namesp
   input macro:
     levels: int > a hand-written macro
   $shared
+  $dated
+  $operands
 
 feature function has_levels > The same name as the predicate below: another registry, so allowed.
+  $viewer
   input arguments: $position
   output storage: $every
 

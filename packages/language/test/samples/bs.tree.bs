@@ -1,0 +1,35 @@
+> Pre-built tree structures with multiple variations.
+
+name Tree
+slug bookshelf-tree
+version 5.0.0
+tags prefabs
+authors Leirof
+contributors Aksiome
+since 2018/07/02 1.13
+
+$tree[birch]:
+  is: A birch tree
+$tree[cypress]:
+  is: A cypress tree
+$tree[dark_oak]:
+  is: A dark oak tree
+$tree[dead_spruce]:
+  is: A dead spruce tree
+$tree[exotic]:
+  is: A exotic tree
+$tree[fir]:
+  is: A fir tree
+$tree[jungle]:
+  is: A jungle tree
+$tree[mushroom]:
+  is: A huge mushroom
+$tree[oak]:
+  is: A oak tree
+$tree[palm]:
+  is: A palm tree
+
+$variant[1, 2, 3, 4, 5]
+
+
+feature structure $tree/$variant > $tree.is, variant $variant.
