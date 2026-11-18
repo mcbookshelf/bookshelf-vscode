@@ -2,13 +2,14 @@ import './model';
 
 type Type = PrimitiveType | ListType | StructType | ReferenceType | ArrayType | UnionType;
 
+type Member = Field | Paste;
+
 interface PrimitiveType {
     attributes: string[];
     name: string;
     range?: Range;
 }
 
-/** 'int[]': an array of one of five primitives, attributed as a whole. */
 interface ArrayType {
     attributes: string[];
     element: PrimitiveType;
@@ -22,16 +23,18 @@ interface ListType {
     range?: Range;
 }
 
+/** Its fields are the body of the line it is written on. */
 interface StructType {
     attributes: string[];
-    entries: StructEntry[];
 }
 
-interface StructEntry {
+/** Without a type, a struct whose fields are its body. */
+interface Field {
     name: string;
     optional: boolean;
-    type: Type;
+    type?: Type;
     description?: string;
+    body: Member[];
 }
 
 interface UnionType {
@@ -40,11 +43,13 @@ interface UnionType {
 
 interface ReferenceType {
     attributes: string[];
-    reference: @Variable;
+    reference: @Definition;
 }
 
+/** `operator` is '..', '<..', '..<' or '<..<'. */
 interface Range {
     value?: number;
     min?: number;
     max?: number;
+    operator?: string;
 }

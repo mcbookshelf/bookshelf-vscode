@@ -1,51 +1,24 @@
-import type { LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 import type * as vscode from 'vscode';
 import * as path from 'node:path';
-import { LanguageClient, TransportKind } from 'vscode-languageclient/node';
+import { LanguageClient, TransportKind, type LanguageClientOptions, type ServerOptions } from 'vscode-languageclient/node';
 
-let client: LanguageClient;
+let client: LanguageClient | undefined;
 
-// This function is called when the extension is activated.
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
-    client = await startLanguageClient(context);
-}
-
-// This function is called when the extension is deactivated.
-export function deactivate(): Thenable<void> | undefined {
-    if (client) {
-        return client.stop();
-    }
-    return undefined;
-}
-
-async function startLanguageClient(context: vscode.ExtensionContext): Promise<LanguageClient> {
     const serverModule = context.asAbsolutePath(path.join('out', 'language', 'main.cjs'));
-    // The debug options for the server
-    // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging.
-    // By setting `process.env.DEBUG_BREAK` to a truthy value, the language server will wait until a debugger is attached.
+    // In debug mode the server listens for a debugger, and waits for it when DEBUG_BREAK is set.
     const debugOptions = { execArgv: ['--nolazy', `--inspect${process.env.DEBUG_BREAK ? '-brk' : ''}=${process.env.DEBUG_SOCKET || '6009'}`] };
-
-    // If the extension is launched in debug mode then the debug server options are used
-    // Otherwise the run options are used
     const serverOptions: ServerOptions = {
         run: { module: serverModule, transport: TransportKind.ipc },
         debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions }
     };
-
-    // Options to control the language client
     const clientOptions: LanguageClientOptions = {
         documentSelector: [{ scheme: '*', language: 'bsdoc' }]
     };
-
-    // Create the language client and start the client.
-    const client = new LanguageClient(
-        'bsdoc',
-        'Bookshelf',
-        serverOptions,
-        clientOptions
-    );
-
-    // Start the client. This will also launch the server
+    client = new LanguageClient('bsdoc', 'Bookshelf', serverOptions, clientOptions);
     await client.start();
-    return client;
+}
+
+export function deactivate(): Thenable<void> | undefined {
+    return client?.stop();
 }

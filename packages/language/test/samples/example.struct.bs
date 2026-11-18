@@ -1,0 +1,55 @@
+# Invented features, only to show how structs are written: no module needs these forms today.
+
+> Show every way to write a struct.
+
+name Example
+slug bookshelf-example
+version 5.0.0
+tags runtime
+authors Aksiome
+since 2026/11/18 26.4
+
+$position:
+  x: int > x coordinate of the block
+  y: int > y coordinate of the block
+  z: int > z coordinate of the block
+
+$block:
+  id: string > id of the block, such as `minecraft:stone`
+  state?: string > block states, such as `[facing=north]`
+
+
+feature function fill_region > Fill a region with a block.
+  @dimension > dimension of the region
+  input arguments:
+    block: $block > block to fill the region with
+    region: struct > region to fill
+      from: $position
+      to: $position
+      hollow?: boolean > whether to leave the inside empty
+    limits:
+      batch?: int @ 1.. > blocks placed each tick, 256 by default
+      total?: int @ 1.. > blocks placed at most
+  output result: int @ 0.. > number of blocks changed
+
+feature function trace_path > Run a command at each point of a path.
+  input arguments:
+    run: string > command to run at each point
+    points: [struct] @ 2.. > points of the path, in order
+      at: $position
+      wait?: int @ 0.. > ticks to wait at this point, 0 by default
+    speed: struct | number > blocks per tick, the same everywhere or as a range
+      min: number @ 0..
+      max: number @ 0..
+  output state > the command runs at each point, over several ticks
+
+feature function place > Place a block at a position.
+  input arguments:
+    placement: [$block, $position] > block to place, and where
+  output success > whether the position was loaded
+
+feature function get_neighbors > Get the blocks around a position.
+  @position > position to look around
+  output storage: [struct] @ 0..6 > one entry for each side that holds a block
+    side: string > side of the position, such as `north`
+    block: $block

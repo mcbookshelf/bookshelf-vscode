@@ -6,22 +6,37 @@
   ],
   "patterns": [
     {
-      "include": "#struct"
-    },
-    {
       "include": "#comment"
     },
     {
-      "include": "#property-line"
+      "include": "#list-block"
+    },
+    {
+      "include": "#list"
+    },
+    {
+      "include": "#head-property"
+    },
+    {
+      "include": "#metadata"
+    },
+    {
+      "include": "#metadata-flag"
     },
     {
       "include": "#feature"
     },
     {
-      "include": "#variable-declaration"
+      "include": "#context"
     },
     {
-      "include": "#role"
+      "include": "#slot"
+    },
+    {
+      "include": "#definition"
+    },
+    {
+      "include": "#field"
     },
     {
       "include": "#documentation"
@@ -33,71 +48,58 @@
       "include": "#reference"
     },
     {
-      "include": "#kind"
-    },
-    {
       "include": "#type-expression"
-    },
-    {
-      "include": "#storage-target"
-    },
-    {
-      "include": "#path"
     },
     {
       "include": "#identifier"
     }
   ],
   "repository": {
-    "struct": {
-      "comment": "a struct is a block: an entry inside it has the shape of a property line, but is not one",
-      "begin": "\\{",
-      "end": "\\}",
-      "beginCaptures": {
-        "0": {
-          "name": "punctuation.section.struct.begin.bsdoc"
-        }
-      },
-      "endCaptures": {
-        "0": {
-          "name": "punctuation.section.struct.end.bsdoc"
-        }
-      },
-      "patterns": [
-        {
-          "include": "#struct"
-        },
-        {
-          "include": "#comment"
-        },
-        {
-          "include": "#documentation"
-        },
-        {
-          "include": "#attribute"
-        },
-        {
-          "include": "#entry"
-        },
-        {
-          "include": "#reference"
-        },
-        {
-          "include": "#type-expression"
-        },
-        {
-          "include": "#identifier"
-        }
-      ]
-    },
     "comment": {
       "comment": "a comment is a whole line whose first non-blank character is '#'",
       "match": "^\\s*#.*$",
       "name": "comment.line.number-sign.bsdoc"
     },
-    "property-line": {
-      "comment": "a document or feature property: any key, the rest of the line as free text",
-      "match": "^\\s*([A-Za-z_][A-Za-z0-9_-]*)(\\s*:)[ \\t]*([^\\r\\n]*)$",
+    "list-block": {
+      "comment": "'$axis[x, y]:' opens the properties of these items: a block which runs until the next line which is not indented",
+      "begin": "^(\\$)([A-Za-z_][A-Za-z0-9_]*)(\\[)([^\\]]*)(\\])\\s*(:)\\s*$",
+      "end": "^(?=\\S)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.bsdoc"
+        },
+        "2": {
+          "name": "variable.parameter.bsdoc"
+        },
+        "3": {
+          "name": "punctuation.separator.bsdoc"
+        },
+        "4": {
+          "patterns": [
+            {
+              "include": "#list-item"
+            }
+          ]
+        },
+        "5": {
+          "name": "punctuation.separator.bsdoc"
+        },
+        "6": {
+          "name": "punctuation.separator.key-value.bsdoc"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#list-property"
+        }
+      ]
+    },
+    "list-property": {
+      "comment": "a property of a list: any key, the rest of the line as free text",
+      "match": "^\\s+([A-Za-z0-9_-]+)(\\s*:)[ \\t]*(.*)$",
       "captures": {
         "1": {
           "name": "support.type.property-name.bsdoc"
@@ -110,9 +112,84 @@
         }
       }
     },
+    "list": {
+      "comment": "'$face[bottom, top]': a list whose items have no property",
+      "match": "^(\\$)([A-Za-z_][A-Za-z0-9_]*)(\\[)([^\\]]*)(\\])",
+      "captures": {
+        "1": {
+          "name": "keyword.control.bsdoc"
+        },
+        "2": {
+          "name": "variable.parameter.bsdoc"
+        },
+        "3": {
+          "name": "punctuation.separator.bsdoc"
+        },
+        "4": {
+          "patterns": [
+            {
+              "include": "#list-item"
+            }
+          ]
+        },
+        "5": {
+          "name": "punctuation.separator.bsdoc"
+        }
+      }
+    },
+    "list-item": {
+      "patterns": [
+        {
+          "match": "[A-Za-z0-9_-]+",
+          "name": "variable.other.enummember.bsdoc"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.bsdoc"
+        }
+      ]
+    },
+    "head-property": {
+      "comment": "a property of the module: a word which opens a line of the file, the rest of the line as free text; a colon makes the word a name",
+      "match": "^(name|slug|version|documentation|tags|weak_dependencies)\\b(?![-\\w]|\\s*\\??\\s*:)[ \\t]*(.*)$",
+      "captures": {
+        "1": {
+          "name": "support.type.property-name.bsdoc"
+        },
+        "2": {
+          "name": "string.unquoted.bsdoc"
+        }
+      }
+    },
+    "metadata": {
+      "comment": "a metadata line, in the head or in a feature: its value is free text, in which a list is replaced; a colon makes the word a field",
+      "match": "^\\s*(authors|contributors|since)\\b(?![-\\w]|\\s*\\??\\s*:)[ \\t]*(.*)$",
+      "captures": {
+        "1": {
+          "name": "support.type.property-name.bsdoc"
+        },
+        "2": {
+          "name": "string.unquoted.bsdoc",
+          "patterns": [
+            {
+              "include": "#interpolation"
+            }
+          ]
+        }
+      }
+    },
+    "metadata-flag": {
+      "comment": "a metadata line without a value",
+      "match": "^\\s*(deprecated|experimental)\\b(?![-\\w]|\\s*\\??\\s*:)",
+      "captures": {
+        "1": {
+          "name": "support.type.property-name.bsdoc"
+        }
+      }
+    },
     "feature": {
-      "comment": "'feature', a registry (a kind of feature, not a type), then the feature id",
-      "match": "^\\s*(feature)\\b(?:\\s+(function_tag|function|predicate|loot_table|context_int_provider|context_float_provider|block_tag|entity_type_tag|structure)\\b(?:\\s+([A-Za-z0-9_.:/-]+))?)?",
+      "comment": "'feature', a registry (a kind of feature, not a type), then the feature id, in which a list is replaced",
+      "match": "^(feature)\\b(?![-\\w]|\\s*\\??\\s*:)(?:[ \\t]+(function|predicate|loot_table|context_int_provider|context_float_provider|block_tag|entity_type_tag|structure)\\b(?:[ \\t]+([A-Za-z0-9_.$:/-]+))?)?",
       "captures": {
         "1": {
           "name": "keyword.control.feature.bsdoc"
@@ -121,13 +198,45 @@
           "name": "storage.type.registry.bsdoc"
         },
         "3": {
-          "name": "entity.name.function.bsdoc"
+          "name": "entity.name.function.bsdoc",
+          "patterns": [
+            {
+              "include": "#interpolation"
+            }
+          ]
         }
       }
     },
-    "variable-declaration": {
+    "context": {
+      "comment": "what a feature runs as or at",
+      "match": "^\\s*(@(?:executor|position|rotation|dimension|state))\\b",
+      "captures": {
+        "1": {
+          "name": "keyword.control.context.bsdoc"
+        }
+      }
+    },
+    "slot": {
+      "comment": "'input' or 'output', a kind, then a resource location and a path when the storage is not the default one; a colon after the first word makes it a field",
+      "match": "^\\s*(input|output)\\b(?![-\\w]|\\s*\\??\\s*:)(?:[ \\t]+(state|result|success|macro|storage|arguments)\\b(?![-\\w]))?(?:[ \\t]+([a-z0-9_-]+(?:\\.[a-z0-9_-]+)+:[a-z0-9_./-]+))?(?:[ \\t]+([A-Za-z0-9_/-]+))?",
+      "captures": {
+        "1": {
+          "name": "keyword.control.slot.bsdoc"
+        },
+        "2": {
+          "name": "storage.type.kind.bsdoc"
+        },
+        "3": {
+          "name": "entity.name.function.bsdoc"
+        },
+        "4": {
+          "name": "support.type.property-name.bsdoc"
+        }
+      }
+    },
+    "definition": {
       "comment": "a '$' definition: the '$' is an injection marker (a keyword), the name a parameter, which most themes colour",
-      "match": "(\\$)([A-Za-z_][A-Za-z0-9_-]*)\\s*(=)",
+      "match": "^(\\$)([A-Za-z_][A-Za-z0-9_]*)(\\s*:)",
       "captures": {
         "1": {
           "name": "keyword.control.bsdoc"
@@ -136,57 +245,16 @@
           "name": "variable.parameter.bsdoc"
         },
         "3": {
-          "name": "keyword.operator.assignment.bsdoc"
+          "name": "punctuation.separator.key-value.bsdoc"
         }
       }
     },
-    "reference": {
-      "comment": "a '$' reference, scoped like its definition",
-      "match": "(\\$)([A-Za-z_][A-Za-z0-9_-]*)",
+    "field": {
+      "comment": "a field opens an indented line: its name, optional or not, then its colon; the name stays uncoloured, even when it is a language word",
+      "match": "^\\s+([A-Za-z_][A-Za-z0-9_-]*|-?[0-9]+)(\\?)?(\\s*:)",
       "captures": {
         "1": {
-          "name": "keyword.control.bsdoc"
-        },
-        "2": {
-          "name": "variable.parameter.bsdoc"
-        }
-      }
-    },
-    "role": {
-      "match": "^\\s*(input|context|output)\\b",
-      "captures": {
-        "1": {
-          "name": "keyword.control.port.bsdoc"
-        }
-      }
-    },
-    "documentation": {
-      "comment": "a '>' doc runs to the end of its line, a continuation line starts with '>' too; it is prose, not a comment",
-      "match": "(>)(.*)$",
-      "captures": {
-        "1": {
-          "name": "punctuation.definition.comment.bsdoc"
-        },
-        "2": {
-          "name": "comment.block.documentation.bsdoc"
-        }
-      }
-    },
-    "attribute": {
-      "comment": "an mcdoc attribute, kept verbatim, its brackets nesting up to 3 deep",
-      "match": "#\\[(?:[^\\[\\]]|\\[(?:[^\\[\\]]|\\[(?:[^\\[\\]]|\\[[^\\[\\]]*\\])*\\])*\\])*\\]",
-      "name": "entity.other.attribute-name.bsdoc"
-    },
-    "kind": {
-      "match": "\\b(storage|arguments|executor|rotation|position|dimension|state|result|success|macro)\\b",
-      "name": "storage.type.kind.bsdoc"
-    },
-    "entry": {
-      "comment": "a struct entry opens its line: its name, optional or not, then its colon; the name stays uncoloured, as a field",
-      "match": "^\\s*([A-Za-z_][A-Za-z0-9_-]*)(\\?)?(\\s*:)",
-      "captures": {
-        "1": {
-          "name": "meta.entry.name.bsdoc"
+          "name": "meta.field.name.bsdoc"
         },
         "2": {
           "name": "keyword.operator.optional.bsdoc"
@@ -196,8 +264,60 @@
         }
       }
     },
+    "documentation": {
+      "comment": "a '>' doc runs to the end of its line, a continuation line starts with '>' too; it is prose, not a comment, in which a list is replaced",
+      "match": "(>)(.*)$",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.comment.bsdoc"
+        },
+        "2": {
+          "name": "comment.block.documentation.bsdoc",
+          "patterns": [
+            {
+              "include": "#interpolation"
+            }
+          ]
+        }
+      }
+    },
+    "interpolation": {
+      "comment": "'$list' and '$list.key' inside an id, a doc or a metadata value",
+      "match": "(\\$)([A-Za-z_][A-Za-z0-9_]*)(?:(\\.)([A-Za-z_][A-Za-z0-9_]*))?",
+      "captures": {
+        "1": {
+          "name": "keyword.control.bsdoc"
+        },
+        "2": {
+          "name": "variable.parameter.bsdoc"
+        },
+        "3": {
+          "name": "punctuation.accessor.bsdoc"
+        },
+        "4": {
+          "name": "variable.other.property.bsdoc"
+        }
+      }
+    },
+    "attribute": {
+      "comment": "an mcdoc attribute, kept verbatim, its brackets nesting up to 3 deep",
+      "match": "#\\[(?:[^\\[\\]]|\\[(?:[^\\[\\]]|\\[(?:[^\\[\\]]|\\[[^\\[\\]]*\\])*\\])*\\])*\\]",
+      "name": "entity.other.attribute-name.bsdoc"
+    },
+    "reference": {
+      "comment": "a '$' name used as a type, or pasted alone on its line: scoped like its definition",
+      "match": "(\\$)([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": {
+          "name": "keyword.control.bsdoc"
+        },
+        "2": {
+          "name": "variable.parameter.bsdoc"
+        }
+      }
+    },
     "type-expression": {
-      "comment": "everything a type is made of, inside a struct or after a kind",
+      "comment": "everything a type is made of",
       "patterns": [
         {
           "include": "#primitive-type"
@@ -214,32 +334,8 @@
       ]
     },
     "primitive-type": {
-      "match": "\\b(int|byte|long|short|string|float|double|number|boolean|any|player|entity|xyz|xy|overworld|nether|end)\\b",
+      "match": "\\b(int|byte|long|short|string|float|double|number|boolean|any|player|entity|xyz|xy|overworld|nether|end|struct)\\b(?![-\\w])",
       "name": "support.type.primitive.bsdoc"
-    },
-    "storage-target": {
-      "comment": "a resource location, which allows no space around its colon: one identifier, coloured like a feature id",
-      "match": "\\b([a-z0-9_.-]+)(:)([a-z0-9_./-]+)",
-      "captures": {
-        "1": {
-          "name": "entity.name.function.bsdoc"
-        },
-        "2": {
-          "name": "entity.name.function.bsdoc"
-        },
-        "3": {
-          "name": "entity.name.function.bsdoc"
-        }
-      }
-    },
-    "path": {
-      "comment": "a storage path segment, '/' included: '.' separates the segments and stays punctuation; coloured like a property key",
-      "match": "([A-Za-z_][A-Za-z0-9_/-]*)(?=\\.[A-Za-z_]|\\s*:)",
-      "captures": {
-        "1": {
-          "name": "support.type.property-name.bsdoc"
-        }
-      }
     },
     "number": {
       "comment": "an integer or a float, '1.' included; '..' is a range, not a float",
@@ -247,14 +343,14 @@
       "name": "constant.numeric.bsdoc"
     },
     "operator": {
-      "comment": "'..' builds a range, '|' joins a union",
-      "match": "\\.\\.|\\|",
+      "comment": "'..' builds a range, a '<' on a side excluding that bound, '|' joins a union",
+      "match": "<?\\.\\.<?|\\|",
       "name": "keyword.operator.range.bsdoc"
     },
     "punctuation": {
-      "match": "[\\[\\]:,.@]",
-      "name": "punctuation.separator.bsdoc",
-      "comment": "brackets, colons, commas, the '@' of a range, the '.' of a path"
+      "comment": "brackets, colons, commas, the '@' of a range, the '/' of a path",
+      "match": "[\\[\\]:,@/]",
+      "name": "punctuation.separator.bsdoc"
     },
     "identifier": {
       "comment": "any other word: left uncoloured",

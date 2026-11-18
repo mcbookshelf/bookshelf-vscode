@@ -4,46 +4,68 @@ import './model'
 import './terminals'
 import './mcdoc'
 
-// the first line is the description doc, then properties and '$' definitions, then features
+// The head and the definitions share one list: validation checks that the head comes first.
 entry Module returns Module:
     NL? (description=DOC NL)? head+=HeadItem* features+=Feature*;
 
 HeadItem returns HeadItem:
-    Variable | Property;
+    Property | Metadata | Definition;
 
-// 'key: value', the value being the rest of the line; missing values are reported by validation
+// 'name Spline'
 Property returns Property:
-    key=ID ':' value=TEXT? NL;
+    key=HeadKey value=TEXT? NL;
 
-// '$x = state' is a slot definition, '$x = string' a type alias: the first token after '=' tells
-Variable returns Variable:
-    name=VARIABLE '=' (declaration=Declaration | type=Type) End;
+HeadKey returns HeadKey:
+    'name' | 'slug' | 'version' | 'documentation' | 'tags' | 'weak_dependencies';
 
-// a feature has no closing token: it runs until the next 'feature' line or the end of the file
+// 'authors Aksiome, Leirof', 'since 2022/04/14 1.18.2', 'deprecated'
+Metadata returns Metadata:
+    (key=('authors' | 'contributors' | 'since') value=TEXT? | key=('deprecated' | 'experimental')) NL;
+
+// '$x: type', '$x:' then fields or feature lines (told apart by validation), '$x[item, ...]' then properties
+Definition returns Definition:
+    name=VARIABLE
+    ( ':' ( type=Type MemberBlock
+          | NL INDENT (description=DOC NL)? body+=BlockItem+ DEDENT )
+    | list?='[' items+=Name (',' items+=Name)* ']'
+      ( ':' NL INDENT properties+=ListProperty+ DEDENT | NL )
+    );
+
+BlockItem returns BlockItem:
+    Line | Field;
+
+// 'key: text'
+ListProperty returns ListProperty:
+    key=Name ':' value=TEXT? NL;
+
+// 'feature function x > doc': the doc may also be the next line, or the first line of the block
 Feature returns Feature:
-    'feature' registry=Registry id=FeatureId End items+=FeatureItem*;
+    'feature' registry=Registry id=FEATURE_ID
+    ( description=DOC NL (INDENT body+=Line+ DEDENT)?
+    | NL ( description=DOC NL (INDENT body+=Line+ DEDENT)?
+         | INDENT (description=DOC NL)? body+=Line* DEDENT )?
+    );
 
-FeatureItem returns FeatureItem:
-    Slot | Property;
+Line returns Line:
+    Metadata | Context | Slot | Paste;
 
+// '@executor: player[] > doc'
+Context returns Context:
+    kind=ContextKind (':' type=Type)? End;
+
+ContextKind returns ContextKind:
+    '@executor' | '@position' | '@rotation' | '@dimension' | '@state';
+
+// 'input arguments:' then fields, 'output storage bs.example:data some/path: int > doc', 'output success > doc'
 Slot returns Slot:
-    role=('input' | 'context' | 'output') (reference=[Variable:VARIABLE] | declaration=Declaration) End;
+    role=('input' | 'output') kind=Kind id=RESOURCE_LOCATION? path=PathName?
+    ( ':' type=Type? MemberBlock | End );
 
-Declaration returns Declaration:
-    ( kind=('storage' | 'arguments') id=RESOURCE_LOCATION? (path+=PathName ('.' path+=PathName)*)?
-    | kind=KindName )
-    (':' type=Type)?;
-
-KindName returns Kind:
-    'executor' | 'rotation' | 'position' | 'dimension' | 'state' | 'result' | 'success' | 'macro';
+Kind returns Kind:
+    'state' | 'result' | 'success' | 'macro' | 'storage' | 'arguments';
 
 Registry returns Registry:
-    'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag' | 'structure';
+    'function' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag' | 'structure';
 
-// a segment of a storage path: '/' is part of the name, '.' separates the segments
 PathName returns string:
     Name ('/' Name)*;
-
-// a resource location, or a bare path in the namespace of the module
-FeatureId returns string:
-    RESOURCE_LOCATION | PathName;

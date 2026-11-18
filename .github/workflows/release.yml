@@ -16,7 +16,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
       release: ${{ steps.version.outputs.release }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: version
         run: |
           version=$(node -p "require('./packages/extension/package.json').version")
@@ -33,8 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: marketplace
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -43,12 +43,15 @@ jobs:
       - run: npm run build
       - run: npm test --workspace packages/language
       - run: npm run package --workspace packages/extension
-      - uses: azure/login@v2
+      - uses: azure/login@v3
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
-      - run: npx vsce publish --azure-credential --packagePath *.vsix
+      # --skip-duplicate: a run which failed after one registry took the version can be run again
+      - run: npx vsce publish --azure-credential --skip-duplicate --packagePath *.vsix
+        working-directory: packages/extension
+      - run: npx ovsx publish --trusted-publishing --skip-duplicate --packagePath *.vsix
         working-directory: packages/extension
       - run: gh release create "v$VERSION" packages/extension/*.vsix --target "$GITHUB_SHA" --generate-notes
         env:

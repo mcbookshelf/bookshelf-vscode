@@ -1,14 +1,22 @@
 import './type.model';
 
-type HeadItem = Variable | Property;
+type HeadItem = Property | Metadata | Definition;
 
-type FeatureItem = Slot | Property;
+type Line = Metadata | Context | Slot | Paste;
 
-type Registry = 'function' | 'function_tag' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag' | 'structure';
+type BlockItem = Line | Field;
 
-type Role = 'input' | 'context' | 'output';
+type Registry = 'function' | 'predicate' | 'loot_table' | 'context_int_provider' | 'context_float_provider' | 'block_tag' | 'entity_type_tag' | 'structure';
 
-type Kind = 'storage' | 'arguments' | 'executor' | 'rotation' | 'position' | 'dimension' | 'state' | 'result' | 'success' | 'macro';
+type HeadKey = 'name' | 'slug' | 'version' | 'documentation' | 'tags' | 'weak_dependencies';
+
+type MetadataKey = 'authors' | 'contributors' | 'since' | 'deprecated' | 'experimental';
+
+type ContextKind = '@executor' | '@position' | '@rotation' | '@dimension' | '@state';
+
+type Role = 'input' | 'output';
+
+type Kind = 'state' | 'result' | 'success' | 'macro' | 'storage' | 'arguments';
 
 interface Module {
     description?: string;
@@ -17,34 +25,54 @@ interface Module {
 }
 
 interface Property {
-    key: string;
+    key: HeadKey;
     value?: string;
 }
 
-interface Variable {
+interface Metadata {
+    key: MetadataKey;
+    value?: string;
+}
+
+/** A type, a struct, lines or, when `list` is set, some items of a list. */
+interface Definition {
     name: string;
-    declaration?: Declaration;
     type?: Type;
     description?: string;
+    body: BlockItem[];
+    list: boolean;
+    items: string[];
+    properties: ListProperty[];
+}
+
+interface ListProperty {
+    key: string;
+    value?: string;
 }
 
 interface Feature {
     registry: Registry;
     id: string;
     description?: string;
-    items: FeatureItem[];
+    body: Line[];
+}
+
+interface Context {
+    kind: ContextKind;
+    type?: Type;
+    description?: string;
 }
 
 interface Slot {
     role: Role;
-    reference?: @Variable;
-    declaration?: Declaration;
-    description?: string;
-}
-
-interface Declaration {
     kind: Kind;
     id?: string;
-    path: string[];
+    path?: string;
     type?: Type;
+    description?: string;
+    body: Member[];
+}
+
+interface Paste {
+    reference: @Definition;
 }

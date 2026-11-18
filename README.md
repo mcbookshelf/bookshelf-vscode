@@ -1,17 +1,27 @@
-# Workspace overview
+# Bookshelf for VS Code
 
-Depending on the selection during the project generation you will have one or more packages contained in the packages directory.
-Please check the specific projects here:
+Language support for `.bs`, the language describing what a [Bookshelf](https://github.com/mcbookshelf) module offers
+(`module.bs`, `bundle.bs`). It is a [Langium](https://langium.org) workspace:
 
-- [packages/language](./packages/language/README.md) This package is always available and contains the language definition.
-- [packages/cli](./packages/cli/README.md) *Optional* Is only available if you chose to use the command-line interface.
-- [packages/extension](./packages/extension/langium-quickstart.md) *Optional* Contains the VSCode extension if you chose to create it.
+- [packages/language](./packages/language/README.md): the grammar and the language services.
+- [packages/extension](./packages/extension/README.md): the VS Code extension, its TextMate grammar and its language server.
+- [packages/cli](./packages/cli/README.md): a command line which writes a module as JSON.
 
-## What's in the folder?
+## Develop
 
-Some file are contained in the root directory as well.
+```bash
+npm ci
+npm run langium:generate
+npm run build
+npm test --workspace packages/language
+```
 
-- [package.json](./package.json) - The manifest file the main workspace package
-- [tsconfig.json](./tsconfig.json) - The base TypeScript compiler configuration
-- [tsconfig.build.json](./tsconfig.build.json) - Configuration used to build the complete source code.
-- [.gitignore](.gitignore) - Files ignored by git
+- `npm run langium:generate` writes the parser from the grammar: run it again after a change to a `.langium` file.
+- The tests run against the built output, so build before testing.
+- Press `F5` in VS Code to open a window with the extension loaded.
+- `npm run package --workspace packages/extension` builds the `.vsix`.
+
+## Release
+
+A push to `master` which changes the version of `packages/extension/package.json` publishes the extension to the
+Visual Studio Marketplace and to Open VSX, then creates the GitHub release.

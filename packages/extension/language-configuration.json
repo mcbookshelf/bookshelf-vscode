@@ -3,15 +3,36 @@
         "lineComment": "#"
     },
     "brackets": [
-        ["{", "}"],
         ["[", "]"]
     ],
     "autoClosingPairs": [
-        ["{", "}"],
         ["[", "]"]
     ],
     "surroundingPairs": [
-        ["{", "}"],
-        ["[", "]"]
+        ["[", "]"],
+        ["`", "`"]
+    ],
+    "folding": {
+        "offSide": true
+    },
+    "onEnterRules": [
+        {
+            "beforeText": "^feature\\b.*$",
+            "action": {
+                "indent": "indent"
+            }
+        },
+        {
+            "beforeText": "^\\s*[^\\s#>][^>]*:\\s*(>.*)?$",
+            "action": {
+                "indent": "indent"
+            }
+        },
+        {
+            "beforeText": "^\\s*[^\\s#>][^>]*:\\s[^>]*\\bstruct\\b[^>]*(>.*)?$",
+            "action": {
+                "indent": "indent"
+            }
+        }
     ]
 }

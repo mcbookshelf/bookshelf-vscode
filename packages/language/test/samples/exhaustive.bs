@@ -2,180 +2,154 @@
 > Every construct the .bs grammar accepts, gathered in one document.
 > The description may run over several lines.
 
-name: Exhaustive
-slug: bookshelf-exhaustive
-version: 5.0.0
-tags: runtime, datapack-only
-weak_dependencies: bs.log, bs.block
-documentation: https://docs.mcbookshelf.dev/en/latest/modules/exhaustive.html
+name Exhaustive
+slug bookshelf-exhaustive
+version 5.0.0
+tags runtime, datapack-only
+weak_dependencies bs.log, bs.block
+documentation https://docs.mcbookshelf.dev/en/latest/modules/exhaustive.html
+authors Aksiome, Leirof
+contributors theogiraudet
+since 2022/04/14 1.18.2
 
-# a comment between the properties, at any indentation
+# a comment between the definitions, at any indentation
   # and indented
-$done = state > a slot definition: the kind comes first
-$shared = storage bs.exhaustive:shared payload/levels: {
-  levels: int > a storage definition with an explicit target and path
-} > reused below by several features
-$args = arguments: {
-  amount: int > a required entry becomes a macro argument
-  reason?: string > an optional one goes under 'with'
-}
-$block = #[id="block"] string > a type alias, attributed
-$block_state = $block | {
-  id: $block > an alias used inside another alias
-  properties?: #[as=mcdoc:block_states[[id]]] {} > an attribute with nested brackets, and any compound
-}
-$ratio = double @ 0..1
-  > a doc on the next line
-$every = {
+$block: #[id="block"] string > a type, attributed
+$block_state: $block | struct > a type holding a struct: its fields follow
+  id: $block > a type used inside another
+  properties?: #[as=mcdoc:block_states[[id]]] struct > an attribute with nested brackets, and an empty struct
+$ratio: double @ 0..1
+> a doc on the next line
+$open: number @ 0<..<1 > a '<' on a side excludes that bound
+$position:
+  > a struct: fields indented under the name, the doc as the first line of the block
+  x: int
+  y: int
+  z: int
+$every:
   whole: int
   tiny: byte
   small: short
   big: long
   single: float @ 0.5..1.
   wide: double @ ..2.5
+  above: number @ 0<..
+  below: number @ ..<1
   loose: number @ -1..1
-  text: string
+  text: string @ 1..
   flag: boolean
   anything: any
-  compound: {}
+  compound: struct
   ints: int[] @ 4
   bytes: byte @ 0..1 [] @ 1..
   longs: long[] @ ..8
   names: [string] @ 2
-  rows: [{
+  rows: [struct] @ 1..3 > a list of structs
     cell: int
-  }] @ 1..3
   pair: [int, string]
   lone: [int,]
   either: int | string > a union
-  nested: {
-    leaf: {
+  nested:
+    leaf:
+    > a doc on the next line, before the block
       depth: short
-    }
-  }
-  maybe?: boolean, > a trailing comma, as in mcdoc
+  maybe?: boolean
   aliased: $block
+  state: $block_state
+  ratio: $ratio | $open
   attributed: #[id="item"] string
-  merged: #[id="item"] $block > an attribute merged onto the aliased type
-  function: string > an entry named after a keyword
+  merged: #[id="item"] $block > an attribute merged onto the type
+  function: string > a field named after a language word
   storage: int
+  since: int
+  input: int
+  struct: struct
   int: int
-  documented: int
-    > a doc on the next line
-}
+  1: int > a number as a name
+  $position
+$done:
+  output state > lines, pasted in a feature
+$shared:
+  contributors Bafy78
+  @position > a position, with its default type
+  input storage bs.exhaustive:shared payload/levels: > a storage with its own target and path
+    levels: int
+  $done
+
+$face[bottom, top]
+$flag[1, 2, 4]
+$axis[x]:
+  nth: first
+  since: 2025/01/25 1.21.4
+$axis[y, z]:
+  nth: another, a text running to the end of its line: colons, > and # included
+  since: 2025/05/14 1.21.5
 
 feature function add_levels
-  authors: Aksiome, Leirof
-  created: 2022/04/14 1.18.2
-  updated: 2026/11/19 26.3
-  deprecated: false
-  experimental: true
+  > A feature doc as the first line of the block.
+  authors Aksiome
+  contributors Leirof
+  since 2022/04/14 1.18.2
+  deprecated
+  experimental
 
-  context executor: player | entity > an executor takes players and entities
-  context position: xyz
-    > a doc on the next line
-  context rotation: xy
-  context dimension: overworld | nether | end | any
-  context state
-  input $shared > a reference with its own doc, overriding the one of the definition
-  input storage in: {
+  @executor: player | entity > an executor takes players and entities
+  @position: xyz
+  > a doc on the next line
+  @rotation: xy
+  @dimension: overworld | nether | end | any
+  @state > a condition the world must meet
+  input arguments:
     levels: int @ 0..
-  }
+  input storage in:
+    extra?: $every
   input state
   output storage: int[] @ 3 > a Minecraft array, bounded in size
-  output result
+  output result: int
   output success
-  output state > every construct on one line
-  output $done
+  output state > every line of a feature
 
 feature function bs.exhaustive:set_levels > A feature id written with its namespace.
-  authors: Aksiome
-  created: 2022/04/14 1.18.2
-  updated: 2022/04/14 1.18.2
-
-  context executor: entity[] > an array of entities
-  input macro: {
+  @executor: entity[] > an array of entities
+  input macro:
     levels: int > a hand-written macro
-  }
-  input storage bs.exhaustive:shared payload/levels: {
-    levels: int > the same storage path as $shared, with the same type
-  }
-  output $done
+  $shared
 
 feature function has_levels > The same name as the predicate below: another registry, so allowed.
-  authors: Aksiome
-  created: 2023/01/02 1.19
-  updated: 2023/12/31 1.20.4
-
-  input arguments: {
-    levels: int > a storage and a macro derived from it
-  }
+  input arguments: $position
   output storage: $every
 
 feature predicate has_levels
-  > A feature doc on the next line.
-  authors: Aksiome
-  created: 2023/01/02 1.19
-  updated: 2023/12/31 1.20.4
-
-  context executor: player
-  input storage: {
+> A feature doc on the next line.
+  @executor: player
+  input storage:
     whole: int
-  }
   output success > whether the player has levels
 
-feature loot_table roll_levels > The context kinds with their default types.
-  authors: Leirof
-  created: 2024/02/29 1.20.4
-  updated: 2024/02/29 1.20.4
-
-  context executor
-  context position
-  context rotation
-  context dimension
+feature loot_table roll_levels > The contexts with their default types.
+  @executor
+  @position
+  @rotation
+  @dimension
   input state
   output state
 
 feature context_int_provider level_count > A registry holding underscores.
-  authors: Aksiome
-  created: 2025/07/15 1.21.1
-  updated: 2025/07/15 1.21.1
-
-  input storage: {
+  input storage:
     count: int
-  }
   output result: int @ 0..
 
-feature context_float_provider level_ratio > A float provider.
-  authors: Aksiome
-  created: 2025/06/01 1.21
-  updated: 2025/06/01 1.21
+feature context_float_provider $axis/ratio > Get the $axis ratio, the $axis.nth one: a feature repeated over a list.
+  since $axis.since
+  @position: entity
+  output result: float > the $axis ratio
 
-  context position: entity
-  output result: float
+feature predicate face/$face/$flag > Check the $face face against the flag `$flag`: every combination exists.
+  output success
 
-feature function_tag on_level_up > A function tag.
-  authors: Aksiome, Leirof
-  created: 2026/09/13 26.3
-  updated: 2026/09/13 26.3
+feature block_tag can_occlude > A block tag declares no line but metadata.
 
-  input $args
-  output storage path/only.nested.deep: {
-    value: number > a path: '/' belongs to a name, '.' nests
-  }
+feature entity_type_tag is_mob > An entity type tag declares no line either.
 
-feature block_tag can_occlude > A block tag declares no slot.
-  authors: Aksiome
-  created: 2026/09/13 26.3
-  updated: 2026/09/13 26.3
-
-feature entity_type_tag is_mob > An entity type tag declares no slot.
-  authors: Aksiome
-  created: 2026/09/13 26.3
-  updated: 2026/09/13 26.3
-
-feature structure oak/1 > The last registry: a structure declares no slot.
-  authors: Aksiome
-  created: 2026/09/13 26.3
-  updated: 2026/09/13 26.3
+feature structure oak/1 > The last registry: a structure.
 # a trailing comment line

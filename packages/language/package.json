@@ -5,7 +5,7 @@
     "license": "MPL-2.0",
     "type": "module",
     "engines": {
-        "node": ">=20.10.0",
+        "node": "^22.22.2 || ^24.15.0 || >=26",
         "npm": ">=10.2.3"
     },
     "files": [
@@ -37,12 +37,12 @@
     },
     "dependencies": {
         "chevrotain": "~13.2.0",
-        "langium": "~4.4.0",
+        "langium": "~4.4.2",
         "typir": "^0.3.3",
         "typir-langium": "^0.3.3",
         "vscode-languageserver": "~10.1.0"
     },
     "devDependencies": {
-        "langium-cli": "~4.4.0"
+        "langium-cli": "~4.4.1"
     }
 }

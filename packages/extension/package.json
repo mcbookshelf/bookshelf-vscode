@@ -1,7 +1,7 @@
 {
     "name": "vscode-bsdoc",
     "description": "The extension specific package",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "license": "MPL-2.0",
     "displayName": "Bookshelf",
     "publisher": "mcbookshelf",
@@ -62,9 +62,10 @@
     },
     "devDependencies": {
         "@types/vscode": "~1.91.0",
-        "@vscode/vsce": "^3.9.2",
+        "@vscode/vsce": "^4.1.1",
         "concurrently": "~10.0.4",
-        "esbuild": "0.28.2"
+        "esbuild": "0.28.2",
+        "ovsx": "^1.4.0"
     },
     "vsce": {
         "dependencies": false

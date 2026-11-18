@@ -16,7 +16,7 @@
     "devDependencies": {
         "@types/node": "~20.19.43",
         "shx": "~0.4.0",
-        "typescript": "~5.9.3"
+        "typescript": "~7.0.2"
     },
     "workspaces": [
         "packages/language",
@@ -24,10 +24,11 @@
         "packages/extension"
     ],
     "allowScripts": {
+        "@vscode/vsce-sign@2.1.1": true,
         "esbuild@0.28.2": true,
         "fsevents@2.3.3": true
     },
     "overrides": {
-        "langium": "~4.4.0"
+        "langium": "~4.4.2"
     }
 }
