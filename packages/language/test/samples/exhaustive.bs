@@ -9,7 +9,6 @@ tags runtime, datapack-only
 weak_dependencies bs.log, bs.block
 documentation https://docs.mcbookshelf.dev/en/latest/modules/exhaustive.html
 authors Aksiome, Leirof
-contributors theogiraudet
 since 2022/04/14 1.18.2
 
 # a comment between the definitions, at any indentation
@@ -21,12 +20,12 @@ $block_state: $block | struct > a type holding a struct: its fields follow
 $ratio: double @ 0..1
 > a doc on the next line
 $open: number @ 0<..<1 > a '<' on a side excludes that bound
-$position:
+$position: struct
   > a struct: fields indented under the name, the doc as the first line of the block
   x: int
   y: int
   z: int
-$every:
+$every: struct
   whole: int
   tiny: byte
   small: short
@@ -49,8 +48,8 @@ $every:
   pair: [int, string]
   lone: [int,]
   either: int | string > a union
-  nested:
-    leaf:
+  nested: struct
+    leaf: struct
     > a doc on the next line, before the block
       depth: short
   maybe?: boolean
@@ -70,12 +69,12 @@ $every:
 $done: output state > one line, pasted in a feature, written after the name
 $dated: since 2024/01/01 1.20
 $viewer: @executor: player > a context after the name
-$operands: input storage operands:
+$operands: input storage operands
   a: int > a line after the name, with its own fields
 $shared:
   contributors Bafy78
   @position > a position, with its default type
-  input storage bs.exhaustive:shared payload/levels: > a storage with its own target and path
+  input storage bs.exhaustive:shared payload/levels > a storage with its own target and path
     levels: int
   $done
 
@@ -102,9 +101,9 @@ feature function add_levels
   @rotation: xy
   @dimension: overworld | nether | end | any
   @state > a condition the world must meet
-  input arguments:
+  input arguments
     levels: int @ 0..
-  input storage in:
+  input storage in
     extra?: $every
   input state
   output storage: int[] @ 3 > a Minecraft array, bounded in size
@@ -114,7 +113,7 @@ feature function add_levels
 
 feature function bs.exhaustive:set_levels > A feature id written with its namespace.
   @executor: entity[] > an array of entities
-  input macro:
+  input macro
     levels: int > a hand-written macro
   $shared
   $dated
@@ -128,7 +127,7 @@ feature function has_levels > The same name as the predicate below: another regi
 feature predicate has_levels
 > A feature doc on the next line.
   @executor: player
-  input storage:
+  input storage
     whole: int
   output success > whether the player has levels
 
@@ -141,7 +140,7 @@ feature loot_table roll_levels > The contexts with their default types.
   output state
 
 feature context_int_provider level_count > A registry holding underscores.
-  input storage:
+  input storage
     count: int
   output result: int @ 0..
 

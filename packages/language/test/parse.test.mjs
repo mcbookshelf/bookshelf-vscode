@@ -82,10 +82,10 @@ assert.ok(!await parses(`deprecated true\n`), "'deprecated' takes no value");
 assert.ok(await parses(`> desc\nname XP`), 'the last line needs no line break');
 assert.ok(await parses(`> desc\nname XP\n# trailing comment`), 'a trailing comment line without a line break');
 assert.ok(await parses(`> desc\n\n\n   \nname XP\n\n`), 'blank lines, some holding spaces');
-assert.ok(await parses(`> desc\r\nname XP\r\nfeature function a\r\n  since 2022/04/14 1.18.2\r\n  input arguments:\r\n    a: int\r\n`), 'windows line ends');
+assert.ok(await parses(`> desc\r\nname XP\r\nfeature function a\r\n  since 2022/04/14 1.18.2\r\n  input arguments\r\n    a: int\r\n`), 'windows line ends');
 assert.ok(await parses(`> desc\n  # indented comment\nname XP\n`), 'an indented comment line');
 assert.ok(await parses(`${header}feature function a\n  @position\n      # a comment deeper than the block\n  @rotation\n# and one less deep\n  @dimension\n`), 'a comment opens and closes no block');
-assert.ok(await parses(`${header}feature function a\n  input arguments:\n    a: int`), 'the blocks left open at the end of the file are closed');
+assert.ok(await parses(`${header}feature function a\n  input arguments\n    a: int`), 'the blocks left open at the end of the file are closed');
 assert.ok(!await parses(`> desc\n$x: int # not a comment\n`), 'a comment never follows code');
 
 // a doc is written at the end of its line, on the next line, or as the first line of the block
@@ -132,14 +132,14 @@ const defs = await check(`${header}$block: #[id="block"] string > a type
 $union: #[id="block"] string | struct > a type holding a struct
   id: #[id="block"] string
   properties?: #[as=mcdoc:block_states[[id]]] struct
-$position:
+$position: struct
   x: int > a struct
   y: int
   z: int
 $ray:
   contributors Bafy78
   @position > lines
-  input arguments:
+  input arguments
     max_distance?: number
   output success
   $more
@@ -162,7 +162,7 @@ assert.equal(union.type.members[1].$type, 'StructType');
 assert.deepEqual(types(union.body), ['Field', 'Field']);
 assert.equal(union.body[1].optional, true);
 assert.deepEqual(union.body[1].type.attributes, ['#[as=mcdoc:block_states[[id]]]'], 'nested brackets in an attribute');
-assert.equal(definition(defs, 'position').type, undefined);
+assert.equal(definition(defs, 'position').type.$type, 'StructType');
 assert.deepEqual(definition(defs, 'position').body.map(field => field.name), ['x', 'y', 'z']);
 assert.equal(definition(defs, 'position').body[0].description, 'a struct');
 assert.deepEqual(types(definition(defs, 'ray').body), ['Metadata', 'Context', 'Slot', 'Slot', 'Paste']);
@@ -187,7 +187,7 @@ const inline = await check(`${header}$updated: output state > the bar is updated
 $viewer: @executor: player > who looks
 $dated: since 2024/01/01 1.20
 $flagged: deprecated
-$operands: input storage bs.x:shared in: > the operands
+$operands: input storage bs.x:shared in > the operands
   a: int
 $alias: $viewer
 $input: int
@@ -216,7 +216,7 @@ const first = async (body) => (await check(feature(body))).features[0];
 const f = await first(`  @position > position to place at
   @executor: player[]
   @state
-  input arguments:
+  input arguments
     block: string
   input state > something read
   output result: int @ 0..
@@ -263,7 +263,7 @@ assert.ok(!await parses(`${header}feature function_tag a\n`), 'a function tag is
 
 // --- a language word is a name wherever a colon follows it
 
-const words = await check(`${header}$words:
+const words = await check(`${header}$words: struct
   since: int
   since?: int
   input: int
@@ -283,14 +283,14 @@ $lines:
 assert.deepEqual(types(definition(words, 'words').body), new Array(10).fill('Field'));
 assert.deepEqual(definition(words, 'words').body.map(field => field.name), ['since', 'since', 'input', 'output', 'name', 'authors', 'deprecated', 'feature', 'struct', '1']);
 assert.deepEqual(types(definition(words, 'lines').body), ['Metadata', 'Slot', 'Metadata']);
-// fields and lines in one block parse: validation reports the mix
+// a field under a bare '$name:' parses: validation asks for '$name: struct'
 assert.deepEqual(types(definition(await check(`${header}$mixed:\n  since: int\n  since 2022/04/14 1.18.2\n`), 'mixed').body), ['Field', 'Metadata']);
 
 // --- structs: fields indented under a line, 'struct' when something else is on the line
 
-const structs = (await first(`  input arguments:
+const structs = (await first(`  input arguments
     run: string > command to run at each point
-    limits:
+    limits: struct
       batch?: int @ 1.. > blocks placed each tick
     region: struct > region to fill
       from: $position
@@ -305,7 +305,7 @@ const structs = (await first(`  input arguments:
     $position
 `)).body.at(-1).body;
 assert.deepEqual(types(structs), ['Field', 'Field', 'Field', 'Field', 'Field', 'Field', 'Paste']);
-assert.equal(structs[1].type, undefined, 'nothing after the colon means a struct');
+assert.equal(structs[1].type.$type, 'StructType');
 assert.equal(structs[1].body[0].optional, true);
 assert.equal(structs[2].type.$type, 'StructType');
 assert.equal(structs[2].description, 'region to fill');
@@ -318,11 +318,11 @@ assert.equal(structs[5].body.length, 0, "'struct' with no field under it is an e
 
 // --- indentation: two spaces per level, no tabs
 
-assert.deepEqual(await indentationErrors(feature(`  input arguments:\n      a: int\n`)), ['10: a block is indented by 2 spaces, not 4']);
-assert.deepEqual(await indentationErrors(feature(`  input arguments:\n   a: int\n`)), ['10: a block is indented by 2 spaces, not 1']);
-assert.deepEqual(await indentationErrors(feature(`  input arguments:\n\ta: int\n`)), ['10: a line is indented with spaces, not tabs']);
-assert.deepEqual(await indentationErrors(feature(`  input arguments:\n    a: int\n   b: int\n`)), ['11: a line is indented like the block it belongs to, this one like none']);
-assert.deepEqual(await indentationErrors(feature(`  input arguments:\n    a:\n      b: int\n  output success\n`)), [], 'a line may close several blocks');
+assert.deepEqual(await indentationErrors(feature(`  input arguments\n      a: int\n`)), ['10: a block is indented by 2 spaces, not 4']);
+assert.deepEqual(await indentationErrors(feature(`  input arguments\n   a: int\n`)), ['10: a block is indented by 2 spaces, not 1']);
+assert.deepEqual(await indentationErrors(feature(`  input arguments\n\ta: int\n`)), ['10: a line is indented with spaces, not tabs']);
+assert.deepEqual(await indentationErrors(feature(`  input arguments\n    a: int\n   b: int\n`)), ['11: a line is indented like the block it belongs to, this one like none']);
+assert.deepEqual(await indentationErrors(feature(`  input arguments\n    a: struct\n      b: int\n  output success\n`)), [], 'a line may close several blocks');
 
 // --- types
 

@@ -94,7 +94,7 @@ export class BsdocValidator {
         }
     }
 
-    /** The head comes before the '$' definitions, and a bundle holds properties only. */
+    /** The head comes before the '$' definitions and holds no contributors, and a bundle holds properties only. */
     checkHead(module: Module, accept: ValidationAcceptor): void {
         const bundle = AstUtils.getDocument(module).uri.path.endsWith('/bundle.bs');
         let definition: Definition | undefined;
@@ -111,6 +111,9 @@ export class BsdocValidator {
             }
             if (bundle && (!isProperty(item) || item.key === 'weak_dependencies')) {
                 accept('error', BUNDLE, { node: item, property: 'key' });
+            } else if (item.key === 'contributors') {
+                // every feature would inherit it, and nothing clears it for the ones which have none
+                accept('error', "'contributors' is written on features, not in the head", { node: item, property: 'key' });
             }
         }
         for (const feature of bundle ? module.features : []) {
@@ -145,11 +148,9 @@ export class BsdocValidator {
                 continue;
             }
             if (!definition.type) {
-                const shape = shapeOf(definition);
-                for (const item of definition.body) {
-                    if (!isPaste(item) && (isField(item) ? 'struct' : 'lines') !== shape) {
-                        accept('error', 'a block holds either fields or feature lines, not both', opening(item));
-                    }
+                // the block under a bare '$name:' holds lines
+                for (const item of definition.body.filter(isField)) {
+                    accept('error', `a field belongs to a struct: write '$${definition.name}: struct'`, opening(item));
                 }
             }
             const cycle = cycleOf(definition, [definition]);
@@ -230,13 +231,13 @@ export class BsdocValidator {
             return;
         }
         const container = paste.$container;
-        const lines = isFeature(container) || (isDefinition(container) && !container.type && shapeOf(container) === 'lines');
+        const lines = isFeature(container) || (isDefinition(container) && !container.type);
         if (lines ? shape !== 'lines' : !structOf(target)) {
             accept('error', `'$${target.name}' is ${SHAPES[shape]}, not ${lines ? 'lines' : 'a struct'}: it is declared on line ${line(target)}`, { node: paste, property: 'reference' });
         }
     }
 
-    /** A field is named once, and the fields under a line are the ones of the one 'struct' its type holds. */
+    /** A field is named once and has a type, a colon announces a type, and the fields under a line are the ones of the one 'struct' its type holds. */
     checkFields(owner: Definition | Slot | Field, accept: ValidationAcceptor): void {
         const seen = new Map<string, Field>();
         for (const field of (owner.body as readonly AstNode[]).filter(isField)) {
@@ -247,8 +248,12 @@ export class BsdocValidator {
                 seen.set(field.name, field);
             }
         }
-        if (isField(owner) && !owner.type && owner.body.length === 0) {
-            accept('error', `'${owner.name}' needs a type, or fields under it`, { node: owner, property: 'name' });
+        if (isField(owner) && !owner.type) {
+            const hint = owner.body.length > 0 ? ": write 'struct' for the fields under it" : '';
+            accept('error', `'${owner.name}' needs a type${hint}`, { node: owner, property: 'name' });
+        }
+        if (isSlot(owner) && owner.colon && !owner.type) {
+            accept('error', 'a colon announces a type: remove it, the fields under the line need none', { node: owner, property: 'colon' });
         }
         if (!owner.type) {
             return;

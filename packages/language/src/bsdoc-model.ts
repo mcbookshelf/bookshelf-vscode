@@ -102,42 +102,24 @@ export const definitionsOf = (module: Module): Definition[] => module.head.filte
 
 export type Shape = 'type' | 'struct' | 'lines' | 'list';
 
-/** What a definition is: a block is what its first field or line makes it, a block of pastes what it pastes. */
-export function shapeOf(definition: Definition | undefined, seen: Set<Definition> = new Set()): Shape | undefined {
-    if (!definition || seen.has(definition)) {
+/** What a definition is: a list, a type (a struct when its type is one), or lines when it has no type. */
+export function shapeOf(definition: Definition | undefined): Shape | undefined {
+    if (!definition) {
         return undefined;
     }
     if (definition.list) {
         return 'list';
     }
-    if (definition.type) {
-        return 'type';
+    if (!definition.type) {
+        return 'lines';
     }
-    const first = definition.body.find(item => !isPaste(item));
-    if (first) {
-        return isField(first) ? 'struct' : 'lines';
-    }
-    seen.add(definition);
-    for (const item of definition.body) {
-        const target = isPaste(item) ? item.reference.ref : undefined;
-        const shape = shapeOf(target, seen);
-        if (shape === 'struct' || shape === 'lines') {
-            return shape;
-        }
-        if (shape === 'type' && structOf(target)) {
-            return 'struct';
-        }
-    }
-    return undefined;
+    return structOf(definition) ? 'struct' : 'type';
 }
 
-/** The definition holding the fields `definition` stands for: a block of fields, '$x: struct', or another name for either. */
+/** The definition holding the fields `definition` stands for: '$x: struct', or another name for one. */
 export function structOf(definition: Definition | undefined, seen: Set<Definition> = new Set()): Definition | undefined {
-    if (!definition || seen.has(definition) || definition.list) {
+    if (!definition || seen.has(definition) || definition.list || !definition.type) {
         return undefined;
-    }
-    if (!definition.type) {
-        return shapeOf(definition) === 'struct' ? definition : undefined;
     }
     if (isStructType(definition.type)) {
         return definition;
@@ -304,7 +286,7 @@ export function docOf(node: Context | Slot | Field | Definition): string | undef
     return node.description ?? (isReferenceType(node.type) ? node.type.reference.ref?.description : undefined);
 }
 
-/** The type of a line or a field: 'struct' for the fields under it, its default when it declares none. */
+/** The type of a line or a field: 'struct' for the fields under a line without one, its default when it has none. */
 export function typeOf(node: Context | Slot | Field | Definition, registry?: Registry): string | undefined {
     if (node.type) {
         return typeToString(node.type);
@@ -318,22 +300,16 @@ export function typeOf(node: Context | Slot | Field | Definition, registry?: Reg
     return isSlot(node) && node.kind === 'result' ? resultType(registry) : undefined;
 }
 
-/** What a type resolves to: a type, or the definition of a block of fields, which stands for a struct. */
-export type Resolved = Type | Definition;
-
 /** The type behind the '$' names; lines, a list, nothing or a cycle resolve to nothing, and are reported by validation. */
-export function resolveType(type: Type | undefined, seen: Set<Definition> = new Set()): Resolved | undefined {
+export function resolveType(type: Type | undefined, seen: Set<Definition> = new Set()): Type | undefined {
     if (!isReferenceType(type)) {
         return type;
     }
     const target = type.reference.ref;
-    if (!target || seen.has(target) || target.list) {
+    if (!target?.type || seen.has(target)) {
         return undefined;
     }
-    if (target.type) {
-        return resolveType(target.type, new Set(seen).add(target));
-    }
-    return shapeOf(target) === 'struct' ? target : undefined;
+    return resolveType(target.type, new Set(seen).add(target));
 }
 
 /** The text of a type, as written, '$' names kept. */

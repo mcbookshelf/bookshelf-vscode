@@ -27,7 +27,7 @@ $updated: output state > the experience bar is updated
 
 feature function add_levels > Add levels to players.
   @executor: player[] > players to add levels to
-  input arguments:
+  input arguments
     levels: int > levels to add, negative to remove
   $updated
 

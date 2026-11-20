@@ -22,8 +22,10 @@ HeadKey returns HeadKey:
 Metadata returns Metadata:
     (key=('authors' | 'contributors' | 'since') value=TEXT? | key=('deprecated' | 'experimental')) NL;
 
-// '$x: type', '$x:' then fields or feature lines (told apart by validation), '$x[item, ...]' then properties.
-// One line can follow the name directly, since no line starts like a type: '$x: output state > doc'.
+// After the name comes what it is: '$x: type' (with its fields under it for a struct), '$x:' then
+// feature lines, '$x[item, ...]:' then properties. One line can follow the name directly, since no
+// line starts like a type: '$x: output state > doc'. Fields under '$x:' parse, for validation to
+// ask for '$x: struct'.
 Definition returns Definition:
     name=VARIABLE
     ( ':' ( type=Type MemberBlock
@@ -62,10 +64,11 @@ Context returns Context:
 ContextKind returns ContextKind:
     '@executor' | '@position' | '@rotation' | '@dimension' | '@state';
 
-// 'input arguments:' then fields, 'output storage bs.example:data some/path: int > doc', 'output success > doc'
+// 'input arguments' then fields, 'output storage bs.example:data some/path: int > doc', 'output success > doc'.
+// A colon announces a type: one with nothing after it parses, for validation to ask to remove it.
 Slot returns Slot:
     role=('input' | 'output') kind=Kind id=RESOURCE_LOCATION? path=PathName?
-    ( ':' type=Type? MemberBlock | End );
+    (colon?=':' type=Type?)? MemberBlock;
 
 Kind returns Kind:
     'state' | 'result' | 'success' | 'macro' | 'storage' | 'arguments';

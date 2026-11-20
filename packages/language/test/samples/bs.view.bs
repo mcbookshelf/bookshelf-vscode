@@ -14,7 +14,7 @@ $placed: $provider > [block provider](hitbox.md#block-providers) of the blocks t
 $hiding: $provider > [block provider](hitbox.md#block-providers) of the blocks that hide the position, `#bs.hitbox:get_block/collision` by default, as the line of sight of mobs
 $max_distance: number @ 0..2047 > distance the entity sees at most, 16 by default
 
-$target:
+$target: struct
   blocks?: $aimed
   entities?: $provider > [entity provider](hitbox.md#entity-providers) of the entities that stop the view, `#bs.hitbox:get_entity/targetable` by default
   selector?: string > selector arguments the entities must match, such as `tag=my_pack.target`
@@ -36,7 +36,7 @@ $sight:
 
 feature function at_aimed_block > Run a command as an entity, at the block it aims at.
   $viewer
-  input arguments:
+  input arguments
     run: $run > command to run as the entity, at the block, aligned to the grid
     blocks?: $aimed
     max_distance?: $max_distance
@@ -44,14 +44,14 @@ feature function at_aimed_block > Run a command as an entity, at the block it ai
 
 feature function as_aimed_entity > Run a command as and at the entity an entity aims at.
   $viewer
-  input arguments:
+  input arguments
     run: $run > command to run as and at the aimed entity
     $target
   output success > whether the entity aims at an entity
 
 feature function at_aimed_entity > Run a command as an entity, at the entity it aims at.
   $viewer
-  input arguments:
+  input arguments
     run: $run > command to run as the entity that aims, at the aimed entity
     $target
   output success > whether the entity aims at an entity
@@ -59,7 +59,7 @@ feature function at_aimed_entity > Run a command as an entity, at the entity it 
 feature function at_aimed_point > Run a command as an entity, at the point where its view hits a block or an entity.
   since 2024/01/25 1.20.3
   $viewer
-  input arguments:
+  input arguments
     run: $run > command to run as the entity, at the point
     $target
   output success > whether the entity aims at a block or an entity
@@ -67,7 +67,7 @@ feature function at_aimed_point > Run a command as an entity, at the point where
 feature function at_block_placement > Run a command as an entity, where a block it places would go: against the face of the block it aims at.
   since 2024/01/24 1.20.4
   $viewer
-  input arguments:
+  input arguments
     run: $run > command to run as the entity, at the block where a block would be placed, aligned to the grid
     blocks?: $placed
     max_distance?: $max_distance
@@ -75,24 +75,24 @@ feature function at_block_placement > Run a command as an entity, where a block 
 
 feature function as_looked_entity > Run a command as the entity a player looks at, where the function runs. Only entities tagged `bs.view.is_lookable` can be looked at.
   $looked
-  input arguments:
+  input arguments
     run: $run > command to run as the looked entity, at the position of the function
 
 feature function at_looked_entity > Run a command as a player, at the entity it looks at. Only entities tagged `bs.view.is_lookable` can be looked at.
   $looked
-  input arguments:
+  input arguments
     run: $run > command to run as the player, at the looked entity
 
 feature function can_see > Check if an entity can see a position: no block stands between its eyes and the position.
   $sight
   @position > position to see
-  input arguments:
+  input arguments
     blocks?: $hiding
   output success > whether the entity can see the position
 
 feature function in_view > Check if a position is in the field of view of an entity: a cone around the direction it looks at.
   $sight
   @position > position to check
-  input arguments:
+  input arguments
     angle: number @ 0..180 > angle of the cone in degrees, in the world rather than on screen
   output success > whether the position is in the field of view

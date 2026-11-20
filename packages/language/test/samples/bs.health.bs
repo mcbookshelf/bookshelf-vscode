@@ -11,14 +11,14 @@ since 2023/09/15 1.20.2
 feature function add_health > Add or remove health points from players.
   contributors RacoonJohn
   @executor: player[] > players to heal or damage
-  input arguments:
+  input arguments
     points: float @ -2048..2048 > health points to add, negative to remove
   output state > the health is scheduled for update
 
 feature function add_max_health > Add or remove base maximum health points from players.
   contributors RacoonJohn
   @executor: player[] > players to change the base max health of
-  input arguments:
+  input arguments
     points: float @ -2048..2048 > max health points to add, negative to remove
   output state > the base max health is updated
 
@@ -37,14 +37,14 @@ feature function get_max_health > Get a player's base maximum health points.
 feature function set_health > Set players' health points.
   contributors RacoonJohn
   @executor: player[] > players to set the health of
-  input arguments:
+  input arguments
     points: float @ 0..1024 > health points to set
   output state > the health is scheduled for update
 
 feature function set_max_health > Set players' base maximum health points.
   contributors RacoonJohn
   @executor: player[] > players to set the base max health of
-  input arguments:
+  input arguments
     points: float @ 0..1024 > max health points to set
   output state > the base max health is updated
 
@@ -52,7 +52,7 @@ feature function set_ttl > Give entities a lifetime, they die when it runs out.
   authors Aksiome, Leirof
   since 2018/07/08 1.13
   @executor > entities to give a lifetime to
-  input arguments:
+  input arguments
     time: #[match_regex="^(?:\d+(?:\.\d*)?|\.\d+)(?:[dst])?$"] string | int
     > time to live in ticks, or as a [minecraft:time](https://minecraft.wiki/w/Argument_types#time) string such as `10s`, at least one tick
   output state > the lifetime is set, replacing any previous one
@@ -61,7 +61,7 @@ feature function set_ttl_on_death > Run a command when the lifetime of entities 
   authors Aksiome, Leirof
   since 2018/07/08 1.13
   @executor > entities with a lifetime to run the command for
-  input arguments:
+  input arguments
     run: #[command(slash="forbidden",empty="forbidden")] string
     > command run as the entity when its lifetime runs out, replacing any previous one
   output state > the command is registered

@@ -9,31 +9,31 @@ tags runtime
 authors Aksiome
 since 2026/11/18 26.4
 
-$position:
+$position: struct
   x: int > x coordinate of the block
   y: int > y coordinate of the block
   z: int > z coordinate of the block
 
-$block:
+$block: struct
   id: string > id of the block, such as `minecraft:stone`
   state?: string > block states, such as `[facing=north]`
 
 
 feature function fill_region > Fill a region with a block.
   @dimension > dimension of the region
-  input arguments:
+  input arguments
     block: $block > block to fill the region with
     region: struct > region to fill
       from: $position
       to: $position
       hollow?: boolean > whether to leave the inside empty
-    limits:
+    limits: struct
       batch?: int @ 1.. > blocks placed each tick, 256 by default
       total?: int @ 1.. > blocks placed at most
   output result: int @ 0.. > number of blocks changed
 
 feature function trace_path > Run a command at each point of a path.
-  input arguments:
+  input arguments
     run: string > command to run at each point
     points: [struct] @ 2.. > points of the path, in order
       at: $position
@@ -44,7 +44,7 @@ feature function trace_path > Run a command at each point of a path.
   output state > the command runs at each point, over several ticks
 
 feature function place > Place a block at a position.
-  input arguments:
+  input arguments
     placement: [$block, $position] > block to place, and where
   output success > whether the position was loaded
 

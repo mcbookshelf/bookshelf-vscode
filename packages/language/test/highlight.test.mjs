@@ -160,7 +160,7 @@ assert.match(scopeOf('    levels: interval', 'interval'), /^meta\.identifier/, '
 assert.match(scopeOf('    maybe?: boolean', '?'), /^keyword\.operator\.optional/);
 assert.match(scopeOf('    function: string', 'function'), /^meta\.field\.name/);
 assert.match(scopeOf('    1: int', '1'), /^meta\.field\.name/);
-assert.match(scopeOf('    limits:', ':'), /^punctuation\.separator/);
+assert.match(scopeOf('    limits: struct', ':'), /^punctuation\.separator/);
 assert.match(scopeOf('    region: struct > region to fill', 'struct'), /^support\.type\.primitive/);
 assert.match(scopeOf('    region: struct > a struct', 'a struct'), /^comment\.block\.documentation/);
 assert.match(scopeOf('    points: [struct] @ 2.. > doc', '['), /^punctuation\.separator/);
@@ -190,8 +190,8 @@ assert.match(scopeOf('feature structure oak/1', 'oak/1'), /^entity\.name\.functi
 assert.match(scopeOf('  @executor: player | entity > doc', '@executor'), /^keyword\.control\.context/);
 assert.match(scopeOf('  @executor: player | entity > doc', 'player'), /^support\.type\.primitive/);
 assert.match(scopeOf('  @state > doc', '@state'), /^keyword\.control\.context/);
-assert.match(scopeOf('  input arguments:', 'input'), /^keyword\.control\.slot/);
-assert.match(scopeOf('  input arguments:', 'arguments'), /^storage\.type\.kind/);
+assert.match(scopeOf('  input arguments', 'input'), /^keyword\.control\.slot/);
+assert.match(scopeOf('  input arguments', 'arguments'), /^storage\.type\.kind/);
 assert.match(scopeOf('  output state > doc', 'state'), /^storage\.type\.kind/);
 assert.match(scopeOf('  output result: float @ 0.. > doc', 'float'), /^support\.type\.primitive/);
 const target = '  output storage bs.exhaustive:shared payload/levels: int > doc';
@@ -200,7 +200,8 @@ assert.match(scopeOf(target, ':shared'), /^entity\.name\.function/);
 assert.match(scopeOf(target, 'payload/levels'), /^support\.type\.property-name/);
 assert.match(scopeOf(target, '/levels'), /^support\.type\.property-name/);
 assert.match(scopeOf(target, 'int'), /^support\.type\.primitive/);
-assert.match(scopeOf('  input storage in:', 'in:'), /^support\.type\.property-name/);
+assert.match(scopeOf('  input storage here', 'here'), /^support\.type\.property-name/);
+assert.match(scopeOf('  input storage here > a doc', 'a doc'), /^comment\.block\.documentation/);
 
 // '$' definitions, and the lines and fields they paste
 assert.match(scopeOf('$max_distance: number @ 0..2047 > doc', '$'), /^keyword\.control\.bsdoc/);
@@ -219,8 +220,8 @@ assert.match(scopeOf('$viewer: @executor: player > who looks', 'player'), /^supp
 assert.match(scopeOf('$dated: since 2024/01/01 1.20', 'since'), /^support\.type\.property-name/);
 assert.match(scopeOf('$dated: since 2024/01/01 1.20', '2024'), /^string\.unquoted/);
 assert.match(scopeOf('$flagged: deprecated', 'deprecated'), /^support\.type\.property-name/);
-assert.match(scopeOf('$operands: input storage bs.x:shared in:', 'bs.x:shared'), /^entity\.name\.function/);
-assert.match(scopeOf('$operands: input storage:\n  a: int', 'a'), /^meta\.field\.name/, 'the block ends with its line');
+assert.match(scopeOf('$operands: input storage bs.x:shared in', 'bs.x:shared'), /^entity\.name\.function/);
+assert.match(scopeOf('$operands: input storage\n  a: int', 'a'), /^meta\.field\.name/, 'the block ends with its line');
 assert.match(scopeOf('$input: int', 'int'), /^support\.type\.primitive/, 'a type, not a line');
 // a list, and the properties of its items: free text, whatever the key
 assert.match(scopeOf('$face[bottom, east]', 'face'), /^variable\.parameter/);
@@ -236,7 +237,7 @@ assert.match(scopeOf('$axis[x]:\n  where: `on_exit`, an int: 1', 'int'), /^strin
 // the block of a list ends with the next line which is not indented
 assert.match(scopeOf('$axis[x]:\n  nth: first\n\n  # comment\n  where: far', 'far'), /^string\.unquoted/);
 assert.match(scopeOf('$axis[x]:\n  nth: first\n$t: int', 'int'), /^support\.type\.primitive/);
-assert.match(scopeOf('$axis[x]:\n  nth: first\n$position:\n  nth: int', 'int'), /^support\.type\.primitive/);
+assert.match(scopeOf('$axis[x]:\n  nth: first\n$position: struct\n  nth: int', 'int'), /^support\.type\.primitive/);
 assert.match(scopeOf('$axis[x]:\n  nth: first\nfeature function a\n  since: int', 'since'), /^meta\.field\.name/);
 
 // '$list' and '$list.key' are replaced in an id, a doc and a metadata value

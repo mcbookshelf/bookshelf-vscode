@@ -109,10 +109,10 @@ export class BsdocCompletionProvider extends DefaultCompletionProvider {
             return fits(definition => shapeOf(definition) === 'type' || shapeOf(definition) === 'struct');
         }
         if (isPaste(container)) {
-            // lines in a feature, a struct among fields, and either in a block which is not yet one or the other
+            // lines in a feature or under a '$name:', a struct among fields
             const owner = this.ownerAt(context, isBlock);
-            const wanted = !owner ? undefined : isFeature(owner) ? 'lines' : isDefinition(owner) && !owner.type ? shapeOf(owner) : 'struct';
-            return fits(definition => (wanted !== 'struct' && shapeOf(definition) === 'lines') || (wanted !== 'lines' && structOf(definition) !== undefined));
+            const lines = isFeature(owner) || (isDefinition(owner) && !owner.type);
+            return fits(definition => lines ? shapeOf(definition) === 'lines' : structOf(definition) !== undefined);
         }
         return candidates;
     }

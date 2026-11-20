@@ -48,21 +48,21 @@ $spline[linear]:
 
 feature function evaluate/$spline > Get the point of a $spline.name at a given time.
   since $spline.since
-  input arguments:
+  input arguments
     points: $points > $spline.points
     time: number @ 0.. > position on the spline, from 0 to the number of segments: the integer part picks the segment, the fraction the point within it
   output storage: [float] @ 1..3 > point at the given time, with as many coordinates as the points of the spline
 
 feature function sample/$spline > Get points spread along a $spline.name, at regular steps.
   since $spline.since
-  input arguments:
+  input arguments
     points: $points > $spline.points
     step: number @ 0<..1 > fraction of a segment between two points: smaller values give more points
   output storage: [[float] @ 1..3] > points from the start to the end of the spline, `step` apart
 
 feature context_float_provider $spline/$axis > Get the $axis coordinate of a point on one segment of a $spline.name. The segment is overwritten by `evaluate/$spline` and `sample/$spline`.
   since 2026/11/10 26.4
-  input storage:
+  input storage
     points: $points > $spline.segment
     time: number @ 0..1 > position on the segment, from 0 at its start to 1 at its end
   output result: float > $axis coordinate of the point, the $axis.nth coordinate of the control points

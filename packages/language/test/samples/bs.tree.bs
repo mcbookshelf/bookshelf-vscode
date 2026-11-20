@@ -5,7 +5,6 @@ slug bookshelf-tree
 version 5.0.0
 tags prefabs
 authors Leirof
-contributors Aksiome
 since 2018/07/02 1.13
 
 $tree[birch]:
@@ -33,3 +32,4 @@ $variant[1, 2, 3, 4, 5]
 
 
 feature structure $tree/$variant > $tree.is, variant $variant.
+  contributors Aksiome

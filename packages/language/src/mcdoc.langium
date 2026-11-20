@@ -32,7 +32,7 @@ StructType returns StructType:
 ReferenceType returns ReferenceType:
     attributes+=ATTRIBUTE* reference=[Definition:VARIABLE];
 
-// 'name: type > doc', 'name?: type', 'name:' then fields
+// 'name: type > doc', 'name?: type'. A missing type parses, for validation to ask for it.
 Field returns Field:
     name=Name (optional?='?')? ':' type=Type? MemberBlock;
 

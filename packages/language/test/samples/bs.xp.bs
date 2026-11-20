@@ -12,20 +12,20 @@ $updated: output state > the experience bar is updated
 
 feature function add_levels > Add levels to players.
   @executor: player[] > players to add levels to
-  input arguments:
+  input arguments
     levels: int > levels to add, negative to remove
   $updated
 
 feature function add_points > Add experience points to players.
   @executor: player[] > players to add points to
-  input arguments:
+  input arguments
     points: int > points to add, negative to remove
   $updated
 
 feature function add_progress > Add progress to the experience bar.
   since 2023/08/31 1.20.1
   @executor: player[] > players to add bar progress to
-  input arguments:
+  input arguments
     progress: float @ -1..1 > fraction of the bar to add, negative to remove
   $updated
 
@@ -49,24 +49,24 @@ feature function get_total_points > Get the total number of points a player has,
 
 feature function set_levels > Set the level of players.
   @executor: player[] > players to set the levels of
-  input arguments:
+  input arguments
     levels: int @ 0.. > level to set
   $updated
 
 feature function set_points > Set the experience points of players.
   @executor: player[] > players to set the points of
-  input arguments:
+  input arguments
     points: int @ 0.. > points to set within the current level
   $updated
 
 feature function set_progress > Set the fill progress of the experience bar.
   @executor: player[] > players to set the bar progress of
-  input arguments:
+  input arguments
     progress: float @ 0..1 > fraction of the bar to fill
   $updated
 
 feature function set_total_points > Set the total experience points of players.
   @executor: player[] > players to set the total points of
-  input arguments:
+  input arguments
     points: int @ 0.. > total number of points to set, levels included
   $updated

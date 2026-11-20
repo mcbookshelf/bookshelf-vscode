@@ -34,7 +34,7 @@ interface Metadata {
     value?: string;
 }
 
-/** A type, a struct, lines or, when `list` is set, some items of a list. */
+/** A type, lines when it has none or, when `list` is set, some items of a list. */
 interface Definition {
     name: string;
     type?: Type;
@@ -68,6 +68,7 @@ interface Slot {
     kind: Kind;
     id?: string;
     path?: string;
+    colon: boolean;
     type?: Type;
     description?: string;
     body: Member[];

@@ -9,7 +9,7 @@ authors Aksiome
 $run: #[command(slash="forbidden",empty="forbidden")] string
 
 $cuboid:
-  input arguments:
+  input arguments
     run: $run > command to run at each position
     size: [int] @ 3 > number of positions on each axis, in the order of the function name: a negative number goes west, down or north
     batch?: int @ 1.. > positions done each tick, 256 by default
@@ -17,7 +17,7 @@ $cuboid:
   output state > the command runs at each position, over several ticks when there are more than `batch`
 
 $rectangle:
-  input arguments:
+  input arguments
     run: $run > command to run at each position
     size: [int] @ 2 > number of positions on each axis, in the order of the function name: a negative number goes west, down or north
     batch?: int @ 1.. > positions done each tick, 256 by default

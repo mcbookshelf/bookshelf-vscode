@@ -23,7 +23,13 @@
             }
         },
         {
-            "beforeText": "^\\s*[^\\s#>][^>]*:\\s*(>.*)?$",
+            "beforeText": "^\\$[A-Za-z_][A-Za-z0-9_]*(\\[[^\\]]*\\])?:\\s*$",
+            "action": {
+                "indent": "indent"
+            }
+        },
+        {
+            "beforeText": "^\\s*(\\$[A-Za-z_][A-Za-z0-9_]*:\\s*)?(input|output)\\s+(arguments|macro|storage)\\b(\\s+[a-z0-9_.-]+:[a-z0-9_./-]+)?(\\s+[A-Za-z0-9_/-]+)?\\s*(>.*)?$",
             "action": {
                 "indent": "indent"
             }

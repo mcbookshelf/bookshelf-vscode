@@ -1,10 +1,9 @@
 import { AstUtils, type AstNode } from 'langium';
 import { isType, type Type as TypirType, type ValidationProblem, type ValidationProblemAcceptor } from 'typir';
 import { LangiumProblemPrinter, type LangiumTypeSystemDefinition, type TypirLangiumServices, type TypirLangiumSpecifics } from 'typir-langium';
-import { CONTEXT_KIND_TYPES, KINDS_WITHOUT_TYPE, KINDS_WITH_DATA, article, resolveType, resultType, shapeOf, typeToString, type Resolved } from './bsdoc-model.js';
+import { CONTEXT_KIND_TYPES, KINDS_WITHOUT_TYPE, KINDS_WITH_DATA, article, resolveType, resultType, typeToString } from './bsdoc-model.js';
 import {
     isArrayType,
-    isDefinition,
     isFeature,
     isListType,
     isPrimitiveType,
@@ -40,7 +39,7 @@ const KIND_CATEGORY: Record<string, Category> = { '@executor': 'abstractEntity',
 
 /** A leaf of a type, with the '$' reference it came through, where an error is then reported. */
 interface Leaf {
-    type: Resolved;
+    type: Type;
     at: Type;
 }
 
@@ -51,8 +50,6 @@ function* leaves(type: Type, options: { arrays: boolean, lists: boolean }, at: T
         const target = type.reference.ref;
         if (target?.type && !seen.has(target)) {
             yield* leaves(target.type, options, at, new Set(seen).add(target));
-        } else if (target && shapeOf(target) === 'struct') {
-            yield { type: target, at };
         }
     } else if (isUnionType(type)) {
         for (const member of type.members) {
@@ -68,8 +65,6 @@ function* leaves(type: Type, options: { arrays: boolean, lists: boolean }, at: T
         yield { type, at };
     }
 }
-
-const describe = (leaf: Resolved): string => isDefinition(leaf) ? `$${leaf.name}` : typeToString(leaf);
 
 
 export class BsdocTypeSystem implements LangiumTypeSystemDefinition<BsdocSpecifics> {
@@ -90,10 +85,9 @@ export class BsdocTypeSystem implements LangiumTypeSystemDefinition<BsdocSpecifi
             }
         }
 
-        const fits = (leaf: Resolved, expected: string): boolean => {
+        const fits = (leaf: Type, expected: string): boolean => {
             const expectedType = types.get(expected)!;
-            // a block of fields is a struct
-            const actual = isDefinition(leaf) ? types.get('struct')! : typir.Inference.inferType(leaf);
+            const actual = typir.Inference.inferType(leaf);
             // Typir's isSubType() needs an edge, so the reflexive case is checked separately
             return isType(actual) && (actual === expectedType || typir.Subtype.isSubType(actual, expectedType));
         };
@@ -104,7 +98,7 @@ export class BsdocTypeSystem implements LangiumTypeSystemDefinition<BsdocSpecifi
         const expectData = (type: Type, accept: Accept) => {
             for (const leaf of leaves(type, { arrays: true, lists: true })) {
                 if (!fits(leaf.type, 'data')) {
-                    error(leaf.at, `'${describe(leaf.type)}' is not a data type`, accept);
+                    error(leaf.at, `'${typeToString(leaf.type)}' is not a data type`, accept);
                 }
             }
         };
@@ -163,7 +157,7 @@ export class BsdocTypeSystem implements LangiumTypeSystemDefinition<BsdocSpecifi
                 }
                 if (need === 'struct') {
                     const resolved = resolveType(type);
-                    if (resolved && !isStructType(resolved) && !isDefinition(resolved)) {
+                    if (resolved && !isStructType(resolved)) {
                         error(type, kind === 'macro'
                             ? `'${typeToString(type)}' is not a type a macro takes, it needs a struct`
                             : `'${typeToString(type)}' is not a type arguments take, they need a struct`, accept);

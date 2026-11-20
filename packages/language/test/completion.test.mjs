@@ -49,8 +49,8 @@ assert.deepEqual(await proposalsAt(`${header}feature function f\n  <|>`), [...CO
 assert.deepEqual(await proposalsAt(inFeature('  @position\n  output success\n  <|>')), [...CONTEXTS, ...METADATA, 'input', 'output'].sort(), 'after lines without a doc');
 // a line which starts the line after a feature closes it
 assert.deepEqual(await proposalsAt(inFeature('<|>')), ['feature']);
-assert.deepEqual(await proposalsAt(inFeature('  input arguments:\n    a: int\n<|>')), ['feature']);
-assert.deepEqual(await proposalsAt(inFeature('  input arguments:\n    a: int\n  <|>')), [...CONTEXTS, ...METADATA, 'input', 'output'].sort(), 'back in the feature');
+assert.deepEqual(await proposalsAt(inFeature('  input arguments\n    a: int\n<|>')), ['feature']);
+assert.deepEqual(await proposalsAt(inFeature('  input arguments\n    a: int\n  <|>')), [...CONTEXTS, ...METADATA, 'input', 'output'].sort(), 'back in the feature');
 
 // a kind follows 'input' or 'output': only the ones the registry takes there
 assert.deepEqual(await proposalsAt(inFeature('  input <|>')), ['arguments', 'macro', 'state', 'storage']);
@@ -71,11 +71,11 @@ assert.deepEqual(await proposalsAt(inFeature('  @dimension: <|>')), ['any', 'end
 assert.deepEqual(await proposalsAt(inFeature('  output result: <|>')), ['float', 'int']);
 assert.deepEqual(await proposalsAt(inFeature('  @executor: player | <|>')), ['entity', 'player']);
 // a field is data whatever the line, and its name is free
-assert.deepEqual(await proposalsAt(inFeature('  input macro:\n    p: <|>')), DATA);
-assert.deepEqual(await proposalsAt(inFeature('  input macro:\n    <|>')), []);
-assert.deepEqual(await proposalsAt(inFeature('  input storage:\n    p: [<|>')), DATA);
-assert.deepEqual(await proposalsAt(inFeature('  input storage:\n    p: #[id="block"] <|>')), DATA);
-assert.deepEqual(await proposalsAt(inFeature('  input storage:\n    p:\n      q: <|>')), DATA);
+assert.deepEqual(await proposalsAt(inFeature('  input macro\n    p: <|>')), DATA);
+assert.deepEqual(await proposalsAt(inFeature('  input macro\n    <|>')), []);
+assert.deepEqual(await proposalsAt(inFeature('  input storage\n    p: [<|>')), DATA);
+assert.deepEqual(await proposalsAt(inFeature('  input storage\n    p: #[id="block"] <|>')), DATA);
+assert.deepEqual(await proposalsAt(inFeature('  input storage\n    p: struct\n      q: <|>')), DATA);
 // a definition takes any type, and its block either fields or lines
 // ... or one line, written after its name
 const defined = await proposalsAt(`${header}$v: <|>`);
@@ -89,7 +89,7 @@ assert.deepEqual(await proposalsAt(`${header}$v[a]:\n  key: <|>`), []);
 // a '$' proposes the definitions which fit: types and structs as a type, lines in a feature,
 // structs among fields; a list is written in an id or a text, where nothing is proposed
 const definitions = `${header}$my_type: string > doc
-$my_struct:
+$my_struct: struct
   x: int
 $my_lines:
   @position > doc
@@ -97,12 +97,12 @@ $my_list[a, b]
 `;
 assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage: $<|>')), ['$my_struct', '$my_type']);
 assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage: $my_s<|>')), ['$my_struct']);
-assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage:\n    p: $<|>')), ['$my_struct', '$my_type']);
+assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage\n    p: $<|>')), ['$my_struct', '$my_type']);
 assert.deepEqual(await proposalsAt(definitions + inFeature('  $<|>')), ['$my_lines']);
-assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage:\n    $<|>')), ['$my_struct']);
-assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage:\n    p: int\n    $<|>')), ['$my_struct']);
-assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage:\n    p: int\n  $<|>')), ['$my_lines']);
-assert.deepEqual(await proposalsAt(definitions + `$other:\n  y: int\n  $<|>`), ['$my_struct']);
+assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage\n    $<|>')), ['$my_struct']);
+assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage\n    p: int\n    $<|>')), ['$my_struct']);
+assert.deepEqual(await proposalsAt(definitions + inFeature('  input storage\n    p: int\n  $<|>')), ['$my_lines']);
+assert.deepEqual(await proposalsAt(definitions + `$other: struct\n  y: int\n  $<|>`), ['$my_struct']);
 assert.deepEqual(await proposalsAt(definitions + `$other:\n  @rotation\n  $<|>`), ['$my_lines']);
 
 // the proposal replaces the '$' already typed

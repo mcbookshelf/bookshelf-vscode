@@ -9,23 +9,23 @@ since 2024/01/20 1.20.4
 
 $from_hex:
   contributors RacoonJohn
-  input arguments:
+  input arguments
     color: #[color="hex_rgb"] string > color as `#RRGGBB` or `#RRGGBBAA`, in lowercase or uppercase
 
 $from_int:
   contributors RacoonJohn
-  input arguments:
+  input arguments
     color: #[color="composite_rgb"] int > color as an RGB integer
 
 $from_argb:
   authors RacoonJohn
   since 2026/09/24 26.3
-  input arguments:
+  input arguments
     color: #[color="composite_argb"] int > color as an ARGB integer
 
 $from_rgb:
   contributors RacoonJohn
-  input arguments:
+  input arguments
     color: #[color="dec_rgb"] [float] @ 3 | #[color="dec_rgba"] [float] @ 4 > color as `[r,g,b]` or `[r,g,b,a]`, each from `0` to `1`
 
 $to_int:
@@ -34,7 +34,7 @@ $to_int:
 
 $mix:
   since 2026/10/09 26.3
-  input storage:
+  input storage
     from: #[color="composite_argb"] int > color to start from, as an RGB or ARGB integer
     to: #[color="composite_argb"] int > color to go to, as an RGB or ARGB integer
     ratio: float @ 0..1 > how far to go from one to the other: `0` gives `from` and `1` gives `to`

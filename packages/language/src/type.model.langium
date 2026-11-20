@@ -28,7 +28,7 @@ interface StructType {
     attributes: string[];
 }
 
-/** Without a type, a struct whose fields are its body. */
+/** Its body holds the fields of the `struct` in its type. */
 interface Field {
     name: string;
     optional: boolean;

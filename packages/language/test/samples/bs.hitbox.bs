@@ -84,7 +84,7 @@ feature function get_entity/$kind > $kind.get
 feature function is_in_block > Check if a position is inside a block.
   since 2023/11/21 1.20.3
   @position > position to check
-  input storage:
+  input storage
     blocks: $blocks
   output success > whether the position is inside the block
 
@@ -92,7 +92,7 @@ feature function is_in_entity > Check if a position is inside an entity.
   since 2023/11/21 1.20.3
   @executor > entity to check
   @position > position to check
-  input storage:
+  input storage
     entities: $entities
   output success > whether the position is inside the entity
 
@@ -100,7 +100,7 @@ feature function overlaps/block > Check if an entity overlaps the block at a pos
   since 2024/09/28 1.21
   @executor > entity to check
   @position > position of the block
-  input storage:
+  input storage
     blocks: $blocks
     entities: $entities
   output success > whether the entity overlaps a block
@@ -108,7 +108,7 @@ feature function overlaps/block > Check if an entity overlaps the block at a pos
 feature function overlaps/blocks > Check if an entity overlaps any block around it.
   since 2025/03/10 1.21.4
   @executor > entity to check
-  input storage:
+  input storage
     blocks: $blocks
     entities: $entities
   output success > whether the entity overlaps a block
