@@ -299,7 +299,7 @@
     },
     "field": {
       "comment": "a field opens an indented line: its name, optional or not, then its colon; the name stays uncoloured, even when it is a language word",
-      "match": "^\\s+([A-Za-z_][A-Za-z0-9_-]*|-?[0-9]+)(\\?)?(\\s*:)",
+      "match": "^\\s+([A-Za-z0-9_][A-Za-z0-9_-]*|-?[0-9]+)(\\?)?(\\s*:)",
       "captures": {
         "1": {
           "name": "meta.field.name.bsdoc"
@@ -386,8 +386,8 @@
       "name": "support.type.primitive.bsdoc"
     },
     "number": {
-      "comment": "an integer or a float, '1.' included; '..' is a range, not a float",
-      "match": "-?(?:\\d+\\.(?!\\.)\\d*|\\.\\d+|\\d+)",
+      "comment": "an integer or a float, '1.' included; '..' is a range, not a float, and digits that start a name such as '2d' or '007' are not a number",
+      "match": "-?(?:(?:0|[1-9]\\d*)\\.(?!\\.)\\d*|\\.\\d+|(?:0|[1-9]\\d*))(?![A-Za-z0-9_-])",
       "name": "constant.numeric.bsdoc"
     },
     "operator": {
@@ -401,8 +401,8 @@
       "name": "punctuation.separator.bsdoc"
     },
     "identifier": {
-      "comment": "any other word: left uncoloured",
-      "match": "[A-Za-z_][A-Za-z0-9_-]*",
+      "comment": "any other word, a run of letters, digits, '_' and '-' that does not start with '-': left uncoloured",
+      "match": "[A-Za-z0-9_][A-Za-z0-9_-]*",
       "name": "meta.identifier.bsdoc"
     }
   }

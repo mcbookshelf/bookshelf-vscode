@@ -175,6 +175,15 @@ const yz = defs.head.filter(item => item.name === 'axis')[1];
 assert.deepEqual(yz.items, ['y', 'z'], 'a definition can name several items');
 assert.equal(yz.properties[0].value, 'another, with a colon: and a > too', 'the text of a property runs to the end of the line');
 assert.deepEqual((await check(`${header}$word[since, input, struct, int, end]\n`)).head.at(-1).items, ['since', 'input', 'struct', 'int', 'end'], 'language words as items');
+// a name is any run of letters, digits, '_' and '-' that does not start with '-'
+const names = ['000dd', '0d', '1d', '42', '7z-a', '00_x', '007', '01', '1-2', '_x', 'x', 'X9', 'a-b', '0', '-3', '9_', '2d-3d'];
+assert.deepEqual((await check(`${header}$list[${names.join(', ')}]\n`)).head.at(-1).items, names, 'every such name is a list item');
+const fields = names.filter(name => !name.startsWith('-'));
+assert.deepEqual((await check(`${header}$size: struct\n${fields.map(name => `  ${name}: int @ 0..31 > doc\n`).join('')}`)).head.at(-1).body.map(field => field.name), fields, 'and a field');
+assert.equal((await check(`${header}feature function a/007/2d > doc\n`)).features[0].id, 'a/007/2d', 'and a segment of an id');
+await check(`${header}$a: int @ 0..31\n$b: [float] @ 3\n$c: float @ -1.5..1.5\n$d: int @ -5..-1\n$e: [int @ 0..40000] @ 1..\n`);
+assert.ok(!await parses(`${header}$x[-a]\n`), "a name does not start with '-'");
+assert.ok(!await parses(`${header}$a: int @ 007..9\n`), 'a number has no leading zero: it is a name there');
 assert.ok(!await parses(`${header}$x:\n`), "'$x:' needs a type or a block");
 assert.ok(!await parses(`${header}$x[a]:\n`), "'$x[a]:' needs properties");
 assert.ok(!await parses(`${header}$x[]\n`), 'a list needs an item');

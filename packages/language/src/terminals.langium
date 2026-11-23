@@ -15,7 +15,9 @@ terminal ATTRIBUTE: /#\[(?:[^\[\]]|\[(?:[^\[\]]|\[(?:[^\[\]]|\[[^\[\]]*\])*\])*\
 // The '$' is stripped by the value converter. No '-': '$axis-aligned' is '$axis' then '-aligned'.
 terminal VARIABLE: /\$[_A-Za-z][_A-Za-z0-9]*/;
 
-terminal ID: /[_A-Za-z][_A-Za-z0-9-]*/;
+// Any run of letters, digits, '_' and '-' that does not start with '-': '2d' and '007' are names.
+// A plain integer such as '42' is left to INT, which is a name too.
+terminal ID: /(?!(?:0|[1-9][0-9]*)(?![_A-Za-z0-9-]))[_A-Za-z0-9][_A-Za-z0-9-]*/;
 terminal FLOAT returns number: /-?(?:(?:0|[1-9][0-9]*)\.(?!\.)[0-9]*|\.[0-9]+)/;
 terminal INT returns number: /-?(?:0|[1-9][0-9]*)/;
 
